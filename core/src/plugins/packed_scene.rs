@@ -30,9 +30,9 @@ struct GodotSceneSpawned;
 fn spawn_scene(
     mut commands: Commands,
     scene_tree: Res<SceneTreeRef>,
-    new_scenes: Query<(&GodotScene, Option<&Transform>, Entity), Without<GodotSceneSpawned>>,
+    new_scenes: Query<(&GodotScene, Entity), Without<GodotSceneSpawned>>,
 ) {
-    for (scene, transform, ent) in new_scenes.iter() {
+    for (scene, ent) in new_scenes.iter() {
         let resource_loader = ResourceLoader::godot_singleton();
         let packed_scene = resource_loader
             .load(scene.path.clone(), "PackedScene", false)
@@ -47,17 +47,6 @@ fn spawn_scene(
                 .instance(GenEditState::DISABLED.0)
                 .unwrap()
         };
-
-        if let Some(transform) = transform {
-            let transform = transform.to_godot_transform();
-            unsafe {
-                instance
-                    .assume_safe()
-                    .cast::<Spatial>()
-                    .unwrap()
-                    .set_transform(transform);
-            }
-        }
 
         unsafe {
             let scene = scene_tree.0.get().current_scene().unwrap();

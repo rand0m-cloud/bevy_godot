@@ -19,6 +19,7 @@ impl Plugin for GodotCorePlugin {
         app.add_plugin(bevy::core::CorePlugin)
             .add_system_to_stage(CoreStage::PostUpdate, post_update_godot_transforms)
             .add_system_to_stage(CoreStage::PreUpdate, pre_update_godot_transforms)
+            .add_system_to_stage(CoreStage::PostUpdate, set_godot_transforms)
             .init_resource::<SceneTreeRef>();
     }
 }
@@ -222,5 +223,13 @@ fn pre_update_godot_transforms(mut entities: Query<(&mut Transform, &ErasedGodot
     for (mut transform, reference) in entities.iter_mut() {
         let obj = reference.get::<Spatial>();
         *transform = obj.transform().to_bevy_transform();
+    }
+}
+
+fn set_godot_transforms(entities: Query<(&Transform, &ErasedGodotRef), Added<ErasedGodotRef>>) {
+    for (transform, reference) in entities.iter() {
+        reference
+            .get::<Spatial>()
+            .set_transform(transform.to_godot_transform());
     }
 }
