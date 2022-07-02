@@ -20,6 +20,7 @@ impl Plugin for GodotCorePlugin {
             .add_system_to_stage(CoreStage::PostUpdate, post_update_godot_transforms)
             .add_system_to_stage(CoreStage::PreUpdate, pre_update_godot_transforms)
             .add_system_to_stage(CoreStage::PostUpdate, set_godot_transforms)
+            .insert_non_send_resource(())
             .init_resource::<SceneTreeRef>();
     }
 }
