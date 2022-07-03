@@ -20,10 +20,15 @@ impl Plugin for GodotCorePlugin {
             .add_system_to_stage(CoreStage::PostUpdate, post_update_godot_transforms)
             .add_system_to_stage(CoreStage::PreUpdate, pre_update_godot_transforms)
             .add_system_to_stage(CoreStage::PostUpdate, set_godot_transforms)
-            .insert_non_send_resource(())
+            .insert_non_send_resource(GodotLockImpl)
             .init_resource::<SceneTreeRef>();
     }
 }
+
+#[doc(hidden)]
+pub struct GodotLockImpl;
+
+pub type GodotLock<'a> = NonSendMut<'a, GodotLockImpl>;
 
 #[derive(Component, Reflect, Clone)]
 #[reflect(Component)]
@@ -213,6 +218,7 @@ impl IntoGodotTransform for bevy::prelude::Transform {
 
 fn post_update_godot_transforms(
     entities: Query<(&Transform, &ErasedGodotRef), Changed<Transform>>,
+    _godot_lock: GodotLock,
 ) {
     for (transform, reference) in entities.iter() {
         let obj = reference.get::<Spatial>();
@@ -220,14 +226,21 @@ fn post_update_godot_transforms(
     }
 }
 
-fn pre_update_godot_transforms(mut entities: Query<(&mut Transform, &ErasedGodotRef)>) {
+fn pre_update_godot_transforms(
+    mut entities: Query<(&mut Transform, &ErasedGodotRef)>,
+
+    _godot_lock: GodotLock,
+) {
     for (mut transform, reference) in entities.iter_mut() {
         let obj = reference.get::<Spatial>();
         *transform = obj.transform().to_bevy_transform();
     }
 }
 
-fn set_godot_transforms(entities: Query<(&Transform, &ErasedGodotRef), Added<ErasedGodotRef>>) {
+fn set_godot_transforms(
+    entities: Query<(&Transform, &ErasedGodotRef), Added<ErasedGodotRef>>,
+    _godot_lock: GodotLock,
+) {
     for (transform, reference) in entities.iter() {
         reference
             .get::<Spatial>()

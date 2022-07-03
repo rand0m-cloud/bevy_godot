@@ -31,7 +31,7 @@ fn spawn_scene(
     mut commands: Commands,
     scene_tree: Res<SceneTreeRef>,
     new_scenes: Query<(&GodotScene, Entity), Without<GodotSceneSpawned>>,
-    _main_thread: NonSend<()>,
+    _godot_lock: GodotLock,
 ) {
     for (scene, ent) in new_scenes.iter() {
         let resource_loader = ResourceLoader::godot_singleton();
