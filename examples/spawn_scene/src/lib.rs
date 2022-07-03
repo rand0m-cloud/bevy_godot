@@ -20,6 +20,7 @@ fn spawn_cube(mut commands: Commands) {
             .spawn()
             .insert(GodotScene::from_path("res://simple_scene.tscn"))
             .insert(Cube { starting_position })
+            .insert(Children::default())
             .insert(Transform::from_translation(starting_position));
     }
 }

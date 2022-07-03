@@ -57,6 +57,7 @@ fn spawn_scene(
             .entity(ent)
             .insert(OwnedGodotRef::from_ref(instance))
             .insert(ErasedGodotRef::new(unsafe { instance.assume_unique() }))
+            .insert(Children::default())
             .insert(GodotSceneSpawned);
     }
 }
