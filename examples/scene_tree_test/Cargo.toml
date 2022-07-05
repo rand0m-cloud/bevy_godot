@@ -3,6 +3,10 @@ name = "scene_tree_test"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+path = "../run_godot.rs"
+name = "godot"
+
 [lib]
 crate-type = ["cdylib"]
 
