@@ -29,9 +29,8 @@ struct GodotSceneSpawned;
 
 fn spawn_scene(
     mut commands: Commands,
-    scene_tree: Res<SceneTreeRef>,
+    mut scene_tree: SceneTreeRef,
     new_scenes: Query<(&GodotScene, Entity), Without<GodotSceneSpawned>>,
-    _godot_lock: GodotLock,
 ) {
     for (scene, ent) in new_scenes.iter() {
         let resource_loader = ResourceLoader::godot_singleton();
@@ -49,14 +48,13 @@ fn spawn_scene(
         };
 
         unsafe {
-            let scene = scene_tree.0.get().current_scene().unwrap();
+            let scene = scene_tree.get().current_scene().unwrap();
             scene.assume_safe().add_child(instance, false);
         }
 
         commands
             .entity(ent)
-            .insert(OwnedGodotRef::from_ref(instance))
-            .insert(ErasedGodotRef::new(unsafe { instance.assume_unique() }))
+            .insert(unsafe { ErasedGodotRef::new(instance.assume_unique()) })
             .insert(Children::default())
             .insert(GodotSceneSpawned);
     }

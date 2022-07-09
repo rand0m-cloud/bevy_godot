@@ -15,14 +15,10 @@ impl Plugin for GodotPlugin {
 #[macro_export]
 macro_rules! bevy_godot_init {
     ( $init: ident, $app: ident ) => {
-        struct MyApp(App);
-        unsafe impl Send for MyApp {}
-
         #[derive(NativeClass, Default)]
         #[inherit(Node)]
         struct Autoload {
-            app: std::sync::Mutex<Option<MyApp>>,
-            notification_channel: Option<std::sync::mpsc::Sender<()>>,
+            app: App,
         }
 
         #[methods]
@@ -32,11 +28,53 @@ macro_rules! bevy_godot_init {
             }
 
             #[export]
-            fn _ready(&mut self, base: TRef<Node>) {
-                let (app, sender) = __app();
-                *self.app.lock().unwrap() = Some(MyApp(app));
-                self.notification_channel = Some(sender);
+            fn _ready(&mut self, base: &Node) {
+                __app(self, base)
+            }
 
+            #[export]
+            fn _process(&mut self, _base: TRef<Node>, _delta: f32) {
+                self.app.update();
+            }
+        }
+
+        fn __godot_init(init: InitHandle) {
+            init.add_class::<Autoload>();
+            init.add_class::<SceneTreeWatcher>();
+            $init(&init);
+        }
+
+        fn __app(autoload: &mut Autoload, base: &Node) {
+            let mut app = App::new();
+            let (sender, reciever) = std::sync::mpsc::channel();
+            app.add_plugin(bevy_godot::prelude::GodotPlugin)
+                .insert_non_send_resource(reciever);
+            $app(&mut app);
+
+            autoload.app = app;
+
+            let scene_tree_watcher = SceneTreeWatcher::new_instance();
+            scene_tree_watcher
+                .map_mut(|script, base| script.notification_channel = Some(sender))
+                .unwrap();
+
+            base.add_child(scene_tree_watcher.into_base().into_shared(), true);
+        }
+
+        #[derive(NativeClass, Default)]
+        #[inherit(Node)]
+        struct SceneTreeWatcher {
+            notification_channel: Option<std::sync::mpsc::Sender<()>>,
+        }
+
+        #[methods]
+        impl SceneTreeWatcher {
+            fn new(_base: &Node) -> Self {
+                Self::default()
+            }
+
+            #[export]
+            fn _ready(&self, base: TRef<Node>) {
                 unsafe {
                     base.get_tree()
                         .unwrap()
@@ -53,31 +91,11 @@ macro_rules! bevy_godot_init {
             }
 
             #[export]
-            fn _process(&self, _base: TRef<Node>, _delta: f32) {
-                self.app.lock().unwrap().as_mut().unwrap().0.update();
-            }
-
-            #[export]
             fn scene_tree_modified(&self, _base: TRef<Node>) {
                 if let Some(channel) = self.notification_channel.clone() {
                     channel.send(()).unwrap()
                 };
             }
-        }
-
-        fn __godot_init(init: InitHandle) {
-            init.add_class::<Autoload>();
-            $init(&init);
-        }
-
-        fn __app() -> (App, std::sync::mpsc::Sender<()>) {
-            let mut app = App::new();
-            let (sender, reciever) = std::sync::mpsc::channel();
-            app.add_plugin(bevy_godot::prelude::GodotPlugin)
-                .insert_non_send_resource(reciever);
-            $app(&mut app);
-
-            (app, sender)
         }
 
         godot_init!(__godot_init);

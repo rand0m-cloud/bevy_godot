@@ -23,8 +23,7 @@ pub struct CubeTimer(pub Timer);
 
 fn spawn_cube(
     mut commands: Commands,
-    scene_tree: Res<SceneTreeRef>,
-    _godot_lock: GodotLock,
+    mut scene_tree: SceneTreeRef,
     mut timer: ResMut<CubeTimer>,
     time: Res<Time>,
 ) {
@@ -45,7 +44,7 @@ fn spawn_cube(
             .insert(Cube {
                 lifetime: Timer::from_seconds(3.0, false),
             })
-            .insert(ErasedGodotRef::new(unsafe { csg_node.assume_unique() }))
+            .insert(unsafe { ErasedGodotRef::new(csg_node.assume_unique()) })
             .insert(Transform::from_translation(Vec3::new(
                 10.0 * f64::sin(time.seconds_since_startup()) as f32,
                 5.0 * f32::sin(time.seconds_since_startup() as f32),
@@ -57,11 +56,11 @@ fn spawn_cube(
 
 fn cube_lifetime(
     mut commands: Commands,
-    mut cubes: Query<(&mut Cube, &ErasedGodotRef, Entity)>,
+    mut cubes: Query<(&mut Cube, &mut ErasedGodotRef, Entity)>,
+    _scene_tree: SceneTreeRef,
     time: Res<Time>,
-    _godot_lock: GodotLock,
 ) {
-    for (mut cube, reference, ent) in cubes.iter_mut() {
+    for (mut cube, mut reference, ent) in cubes.iter_mut() {
         cube.lifetime.tick(time.delta());
         if cube.lifetime.finished() {
             reference.get::<Node>().queue_free();
@@ -71,16 +70,16 @@ fn cube_lifetime(
 }
 
 fn print_entities(
-    entities: Query<(
+    mut entities: Query<(
         Entity,
         Option<&Name>,
-        Option<&ErasedGodotRef>,
+        Option<&mut ErasedGodotRef>,
         Option<&Parent>,
     )>,
-    _godot_lock: GodotLock,
+    _scene_tree: SceneTreeRef,
 ) {
-    for (ent, name, reference, parent) in entities.iter() {
-        let instance_id = reference.map(|r| r.get::<Object>().get_instance_id());
+    for (ent, name, reference, parent) in entities.iter_mut() {
+        let instance_id = reference.map(|mut r| r.get::<Object>().get_instance_id());
 
         println!(
             "{} [B: {:?}, G: {}, Parent: {:?}]",

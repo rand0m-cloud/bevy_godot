@@ -13,7 +13,7 @@ pub struct Cube {
     starting_position: Vec3,
 }
 
-fn spawn_cube(mut commands: Commands) {
+fn spawn_cube(mut commands: Commands, _scene_tree: SceneTreeRef) {
     for x in [-3.0, 0.0, 3.0] {
         let starting_position = Vec3::new(x, 0.0, -5.0);
         commands
@@ -25,7 +25,11 @@ fn spawn_cube(mut commands: Commands) {
     }
 }
 
-fn move_cubes(mut cubes: Query<(&Cube, &mut Transform)>, time: Res<Time>) {
+fn move_cubes(
+    mut cubes: Query<(&Cube, &mut Transform)>,
+    time: Res<Time>,
+    _scene_tree: SceneTreeRef,
+) {
     for (cube, mut transform) in cubes.iter_mut() {
         transform.translation =
             5.0 * f64::sin(time.seconds_since_startup()) as f32 * Vec3::X + cube.starting_position;

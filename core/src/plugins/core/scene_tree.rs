@@ -1,7 +1,8 @@
 use crate::prelude::*;
-use bevy::ecs::event::Events;
+use bevy::ecs::{event::Events, system::SystemParam};
 use gdnative::api::Engine;
 use std::collections::{HashMap, HashSet};
+use std::marker::PhantomData;
 
 pub struct GodotSceneTreePlugin;
 
@@ -10,16 +11,30 @@ impl Plugin for GodotSceneTreePlugin {
         app.add_system_to_stage(CoreStage::First, on_scene_tree_change)
             .add_startup_system(add_scene_root)
             .add_system(scene_tree_changed)
-            .add_system(add_godot_names)
+            .add_system_to_stage(CoreStage::PostUpdate, add_godot_names)
             .init_resource::<Events<SceneTreeChanged>>()
-            .init_resource::<SceneTreeRef>();
+            .init_non_send_resource::<SceneTreeRefImpl>();
     }
 }
 
-pub struct SceneTreeRef(pub OwnedGodotRef<SceneTree>);
+#[derive(SystemParam)]
+pub struct SceneTreeRef<'w, 's> {
+    godot_ref: NonSendMut<'w, SceneTreeRefImpl>,
+    #[system_param(ignore)]
+    phantom: PhantomData<&'s ()>,
+}
 
-impl SceneTreeRef {
-    pub fn get_ref() -> Ref<SceneTree> {
+impl<'w, 's> SceneTreeRef<'w, 's> {
+    pub fn get(&mut self) -> TRef<SceneTree> {
+        self.godot_ref.0.get()
+    }
+}
+
+#[doc(hidden)]
+pub struct SceneTreeRefImpl(ErasedGodotRef);
+
+impl SceneTreeRefImpl {
+    fn get_ref() -> Ref<SceneTree> {
         unsafe {
             let engine = Engine::godot_singleton();
             engine
@@ -28,15 +43,11 @@ impl SceneTreeRef {
                 .unwrap()
         }
     }
-
-    pub fn get(&self) -> TRef<'_, SceneTree> {
-        self.0.get()
-    }
 }
 
-impl Default for SceneTreeRef {
+impl Default for SceneTreeRefImpl {
     fn default() -> Self {
-        Self(OwnedGodotRef::from_ref(Self::get_ref()))
+        Self(unsafe { ErasedGodotRef::new(Self::get_ref().assume_unique()) })
     }
 }
 
@@ -46,16 +57,17 @@ fn scene_tree_changed(
     mut writer: EventWriter<SceneTreeChanged>,
     channel: NonSend<std::sync::mpsc::Receiver<()>>,
 ) {
-    if channel.try_recv().is_ok() {
+    let events = channel.try_iter().count();
+    if events > 0 {
         writer.send(SceneTreeChanged);
     }
 }
 
-fn add_scene_root(mut commands: Commands, scene_tree: Res<SceneTreeRef>, _godot_lock: GodotLock) {
+fn add_scene_root(mut commands: Commands, mut scene_tree: SceneTreeRef) {
     let root = scene_tree.get().root().unwrap();
     commands
         .spawn()
-        .insert(ErasedGodotRef::new(unsafe { root.assume_unique() }))
+        .insert(unsafe { ErasedGodotRef::new(root.assume_unique()) })
         .insert(Name::from("/root"))
         .insert(Children::default());
 }
@@ -63,9 +75,8 @@ fn add_scene_root(mut commands: Commands, scene_tree: Res<SceneTreeRef>, _godot_
 fn on_scene_tree_change(
     mut commands: Commands,
     mut reader: EventReader<SceneTreeChanged>,
-    scene_tree: Res<SceneTreeRef>,
-    entities: Query<(&ErasedGodotRef, Entity, &Children)>,
-    _godot_lock: GodotLock,
+    mut scene_tree: SceneTreeRef,
+    entities: Query<(&mut ErasedGodotRef, Entity, &Children)>,
 ) {
     if reader.is_empty() {
         return;
@@ -130,7 +141,7 @@ fn on_scene_tree_change(
         .flat_map(|(child, parent)| vec![child, parent])
     {
         if instance_id_mapping.get(instance_id).is_none() {
-            let node = ErasedGodotRef::from_instance_id(**instance_id);
+            let mut node = unsafe { ErasedGodotRef::from_instance_id(**instance_id) };
             let name = node.get::<Node>().name().to_string();
             let ent = commands
                 .spawn()
@@ -169,9 +180,10 @@ fn on_scene_tree_change(
 
 fn add_godot_names(
     mut commands: Commands,
-    missing: Query<(Entity, &ErasedGodotRef), (Without<Name>, With<Children>)>,
+    mut missing: Query<(Entity, &mut ErasedGodotRef), (Without<Name>, With<Children>)>,
+    _scene_tree: SceneTreeRef,
 ) {
-    for (ent, reference) in missing.iter() {
+    for (ent, mut reference) in missing.iter_mut() {
         commands
             .entity(ent)
             .insert(Name::from(reference.get::<Node>().name().to_string()));

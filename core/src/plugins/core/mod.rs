@@ -1,4 +1,7 @@
-use bevy::{app::*, prelude::*};
+use bevy::{
+    app::*, asset::AssetPlugin, input::InputPlugin, prelude::*, scene::ScenePlugin,
+    window::WindowPlugin,
+};
 use gdnative::prelude::{Basis, Vector3};
 
 pub mod godot_ref;
@@ -14,17 +17,17 @@ pub struct GodotCorePlugin;
 
 impl Plugin for GodotCorePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(bevy::core::CorePlugin)
-            .add_plugin(GodotSceneTreePlugin)
-            .add_plugin(GodotTransformsPlugin)
-            .insert_non_send_resource(GodotLockImpl);
+        app.add_plugins_with(DefaultPlugins, |group| {
+            group
+                .disable::<InputPlugin>()
+                .disable::<WindowPlugin>()
+                .disable::<AssetPlugin>()
+                .disable::<ScenePlugin>()
+        })
+        .add_plugin(GodotSceneTreePlugin)
+        .add_plugin(GodotTransformsPlugin);
     }
 }
-
-#[doc(hidden)]
-pub struct GodotLockImpl;
-
-pub type GodotLock<'a> = NonSendMut<'a, GodotLockImpl>;
 
 pub trait IntoBevyTransform {
     fn to_bevy_transform(self) -> bevy::prelude::Transform;
