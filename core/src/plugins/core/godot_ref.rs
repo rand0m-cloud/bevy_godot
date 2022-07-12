@@ -58,7 +58,6 @@ impl<T: GodotObject<Memory = RefCounted> + SubClass<Reference>> GodotReference<T
 #[derive(Component, Reflect, Clone, Default, Debug)]
 #[reflect(Component)]
 pub struct ErasedGodotRef {
-    #[reflect(ignore)]
     object_id: i64,
     class_name: String,
 }
