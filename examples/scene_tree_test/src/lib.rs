@@ -10,7 +10,8 @@ fn build_app(app: &mut App) {
     app.add_system(spawn_cube)
         .add_system(cube_lifetime)
         .add_system(print_entities)
-        .insert_resource(CubeTimer(Timer::from_seconds(0.2, true)));
+        .insert_resource(CubeSpawnTimer(Timer::from_seconds(0.2, true)))
+        .insert_resource(PrintEntitiesTimer(Timer::from_seconds(1.0, true)));
 }
 
 bevy_godot_init!(init, build_app);
@@ -19,12 +20,14 @@ bevy_godot_init!(init, build_app);
 pub struct Cube {
     pub lifetime: Timer,
 }
-pub struct CubeTimer(pub Timer);
+
+pub struct CubeSpawnTimer(pub Timer);
+pub struct PrintEntitiesTimer(pub Timer);
 
 fn spawn_cube(
     mut commands: Commands,
     mut scene_tree: SceneTreeRef,
-    mut timer: ResMut<CubeTimer>,
+    mut timer: ResMut<CubeSpawnTimer>,
     time: Res<Time>,
 ) {
     timer.0.tick(time.delta());
@@ -77,7 +80,14 @@ fn print_entities(
         Option<&Parent>,
     )>,
     _scene_tree: SceneTreeRef,
+    time: Res<Time>,
+    mut print_timer: ResMut<PrintEntitiesTimer>,
 ) {
+    print_timer.0.tick(time.delta());
+    if !print_timer.0.just_finished() {
+        return;
+    }
+
     for (ent, name, reference, parent) in entities.iter_mut() {
         let instance_id = reference.map(|mut r| r.get::<Object>().get_instance_id());
 
