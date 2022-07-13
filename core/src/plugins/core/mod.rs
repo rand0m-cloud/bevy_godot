@@ -22,7 +22,12 @@ impl Plugin for GodotCorePlugin {
                 .disable::<InputPlugin>()
                 .disable::<WindowPlugin>()
                 .disable::<AssetPlugin>()
-                .disable::<ScenePlugin>()
+                .disable::<ScenePlugin>();
+
+            #[cfg(feature = "trace")]
+            group.disable::<bevy::render::RenderPlugin>();
+
+            group
         })
         .add_plugin(GodotSceneTreePlugin)
         .add_plugin(GodotTransformsPlugin);

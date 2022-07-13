@@ -3,6 +3,12 @@ name = "bevy_godot"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = []
+
+trace = ["bevy/trace"]
+trace_chrome = ["trace", "bevy/trace_chrome"]
+
 [dependencies]
 gdnative = "0.10"
 bevy = {version = "0.7", default-features = false}
