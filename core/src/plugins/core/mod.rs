@@ -41,7 +41,7 @@ pub trait IntoBevyTransform {
 impl IntoBevyTransform for gdnative::prelude::Transform {
     fn to_bevy_transform(self) -> bevy::prelude::Transform {
         let quat = self.basis.to_quat();
-        let quat = Quat::from_xyzw(quat.x, quat.y, quat.y, quat.w);
+        let quat = Quat::from_xyzw(quat.x, quat.y, quat.z, quat.w);
 
         let scale = self.basis.scale();
         let scale = Vec3::new(scale.x, scale.y, scale.z);
