@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use bevy::ecs::{event::Events, system::SystemParam};
+use bevy::ecs::system::SystemParam;
 use gdnative::api::Engine;
 use std::collections::{HashMap, HashSet};
 use std::marker::PhantomData;
@@ -8,11 +8,9 @@ pub struct GodotSceneTreePlugin;
 
 impl Plugin for GodotSceneTreePlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_to_stage(CoreStage::First, on_scene_tree_change)
-            .add_startup_system(add_scene_root)
-            .add_system(scene_tree_changed)
-            .add_system_to_stage(CoreStage::PostUpdate, add_godot_names)
-            .init_resource::<Events<SceneTreeChanged>>()
+        app.add_startup_system(add_scene_root)
+            .add_system_to_stage(GodotStage::SceneTreeUpdate, on_scene_tree_change)
+            .add_system_to_stage(GodotStage::BeforeBevy, add_godot_names)
             .init_non_send_resource::<SceneTreeRefImpl>();
     }
 }
@@ -51,18 +49,6 @@ impl Default for SceneTreeRefImpl {
     }
 }
 
-pub struct SceneTreeChanged;
-
-fn scene_tree_changed(
-    mut writer: EventWriter<SceneTreeChanged>,
-    channel: NonSend<std::sync::mpsc::Receiver<()>>,
-) {
-    let events = channel.try_iter().count();
-    if events > 0 {
-        writer.send(SceneTreeChanged);
-    }
-}
-
 fn add_scene_root(mut commands: Commands, mut scene_tree: SceneTreeRef) {
     let root = scene_tree.get().root().unwrap();
     commands
@@ -74,15 +60,9 @@ fn add_scene_root(mut commands: Commands, mut scene_tree: SceneTreeRef) {
 
 fn on_scene_tree_change(
     mut commands: Commands,
-    mut reader: EventReader<SceneTreeChanged>,
     mut scene_tree: SceneTreeRef,
     entities: Query<(&mut ErasedGodotRef, Entity, &Children)>,
 ) {
-    if reader.is_empty() {
-        return;
-    }
-    for _e in reader.iter() {}
-
     unsafe fn traverse(node: TRef<Node>, instances: &mut HashMap<i64, i64>) {
         let parent_id = node.get_instance_id();
         node.get_children()

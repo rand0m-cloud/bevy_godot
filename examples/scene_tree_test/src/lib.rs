@@ -7,9 +7,9 @@ use gdnative::api::CSGBox;
 fn init(_handle: &InitHandle) {}
 
 fn build_app(app: &mut App) {
-    app.add_system(spawn_cube)
-        .add_system(cube_lifetime)
-        .add_system(print_entities)
+    app.add_godot_system(spawn_cube)
+        .add_godot_system(cube_lifetime)
+        .add_godot_system(print_entities)
         .insert_resource(CubeSpawnTimer(Timer::from_seconds(0.2, true)))
         .insert_resource(PrintEntitiesTimer(Timer::from_seconds(1.0, true)));
 }
