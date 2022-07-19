@@ -33,6 +33,7 @@ fn spawn_cube(
     timer.0.tick(time.delta());
     if timer.0.just_finished() {
         let csg_node = CSGBox::new().into_shared();
+
         unsafe {
             scene_tree
                 .get()
@@ -58,16 +59,14 @@ fn spawn_cube(
 }
 
 fn cube_lifetime(
-    mut commands: Commands,
-    mut cubes: Query<(&mut Cube, &mut ErasedGodotRef, Entity)>,
+    mut cubes: Query<(&mut Cube, &mut ErasedGodotRef)>,
     _scene_tree: SceneTreeRef,
     time: Res<Time>,
 ) {
-    for (mut cube, mut reference, ent) in cubes.iter_mut() {
+    for (mut cube, mut reference) in cubes.iter_mut() {
         cube.lifetime.tick(time.delta());
         if cube.lifetime.finished() {
             reference.get::<Node>().queue_free();
-            commands.entity(ent).despawn_recursive();
         }
     }
 }
@@ -77,6 +76,7 @@ fn print_entities(
         Entity,
         Option<&Name>,
         Option<&mut ErasedGodotRef>,
+        Option<&Children>,
         Option<&Parent>,
     )>,
     _scene_tree: SceneTreeRef,
@@ -88,15 +88,16 @@ fn print_entities(
         return;
     }
 
-    for (ent, name, reference, parent) in entities.iter_mut() {
+    for (ent, name, reference, children, parent) in entities.iter_mut() {
         let instance_id = reference.map(|mut r| r.get::<Object>().get_instance_id());
 
         println!(
-            "{} [B: {:?}, G: {}, Parent: {:?}]",
+            "{} [B: {:?}, G: {}, Parent: {:?}, Children Count: {}]",
             name.unwrap_or(&Name::new("N/A")),
             ent,
             instance_id.unwrap_or(-1),
-            parent
+            parent,
+            children.iter().count()
         );
     }
 }

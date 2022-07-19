@@ -1,16 +1,21 @@
 use crate::prelude::*;
 use bevy::ecs::system::SystemParam;
 use gdnative::api::Engine;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::marker::PhantomData;
 
 pub struct GodotSceneTreePlugin;
 
 impl Plugin for GodotSceneTreePlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(add_scene_root)
-            .add_system_to_stage(GodotStage::SceneTreeUpdate, on_scene_tree_change)
-            .add_system_to_stage(GodotStage::BeforeBevy, add_godot_names)
+        app.add_startup_system(initialize_scene_tree)
+            .add_startup_system(connect_scene_tree)
+            .add_system_to_stage(GodotStage::SceneTreeUpdate, write_scene_tree_events)
+            .add_system_to_stage(
+                GodotStage::SceneTreeUpdate,
+                read_scene_tree_events.after(write_scene_tree_events),
+            )
+            .add_event::<SceneTreeEvent>()
             .init_non_send_resource::<SceneTreeRefImpl>();
     }
 }
@@ -49,123 +54,158 @@ impl Default for SceneTreeRefImpl {
     }
 }
 
-fn add_scene_root(mut commands: Commands, mut scene_tree: SceneTreeRef) {
-    let root = scene_tree.get().root().unwrap();
-    commands
-        .spawn()
-        .insert(unsafe { ErasedGodotRef::new(root.assume_unique()) })
-        .insert(Name::from("/root"))
-        .insert(Children::default());
-}
+fn initialize_scene_tree(mut commands: Commands, mut scene_tree: SceneTreeRef) {
+    unsafe fn traverse(
+        node: TRef<Node>,
+        ent_mapping: &mut HashMap<i64, Entity>,
+        commands: &mut Commands,
+    ) {
+        let mut ent = commands.spawn();
+        ent.insert(ErasedGodotRef::new(node.assume_unique()))
+            .insert(Name::from(node.name().to_string()))
+            .insert(Children::default());
 
-fn on_scene_tree_change(
-    mut commands: Commands,
-    mut scene_tree: SceneTreeRef,
-    entities: Query<(&mut ErasedGodotRef, Entity, &Children)>,
-) {
-    unsafe fn traverse(node: TRef<Node>, instances: &mut HashMap<i64, i64>) {
-        let parent_id = node.get_instance_id();
+        if let Some(parent_ent) = node
+            .get_parent()
+            .and_then(|parent| ent_mapping.get(&parent.assume_safe().get_instance_id()))
+        {
+            ent.insert(Parent(*parent_ent));
+        }
+
+        let ent = ent.id();
+        ent_mapping.insert(node.get_instance_id(), ent);
+
         node.get_children()
             .assume_unique()
             .into_iter()
             .for_each(|child| {
                 let child = child.to_object::<Node>().unwrap().assume_safe();
-                let child_id = child.get_instance_id();
-                instances.insert(child_id, parent_id);
-
-                traverse(child, instances);
+                traverse(child, ent_mapping, commands);
             });
     }
 
-    let mut instances = HashMap::new();
     unsafe {
         let root = scene_tree.get().root().unwrap().assume_safe();
-        traverse(root.upcast(), &mut instances);
-    }
-
-    let mut instance_id_mapping = entities
-        .iter()
-        .map(|(reference, ent, _)| (reference.instance_id(), ent))
-        .collect::<HashMap<_, _>>();
-
-    let registered_children = entities
-        .iter()
-        .flat_map(|(reference, _, children)| {
-            children.iter().map(|child_ent| {
-                let (child_reference, _, _) = entities.get(*child_ent).unwrap();
-                (child_reference.instance_id(), reference.instance_id())
-            })
-        })
-        .collect::<HashMap<_, _>>();
-
-    let mut moved_entities = Vec::new();
-    let mut new_entities = Vec::new();
-    for (child, parent) in &instances {
-        if registered_children.get(child) == Some(parent) {
-            continue;
-        } else if let Some(old_parent) = registered_children.get(child) {
-            moved_entities.push((child, (old_parent, parent)));
-        } else {
-            new_entities.push((child, parent));
-        }
-    }
-
-    let deleted_entities: Vec<i64> = {
-        let registered = registered_children.keys().copied().collect::<HashSet<_>>();
-        let new = instances.keys().copied().collect();
-        registered.difference(&new).copied().collect()
-    };
-
-    for instance_id in new_entities
-        .iter()
-        .flat_map(|(child, parent)| vec![child, parent])
-    {
-        if instance_id_mapping.get(instance_id).is_none() {
-            let mut node = unsafe { ErasedGodotRef::from_instance_id(**instance_id) };
-            let name = node.get::<Node>().name().to_string();
-            let ent = commands
-                .spawn()
-                .insert(node)
-                .insert(Children::default())
-                .insert(Name::new(name))
-                .id();
-            instance_id_mapping.insert(**instance_id, ent);
-        }
-    }
-
-    for (child, parent) in new_entities {
-        let ent = *instance_id_mapping.get(child).unwrap();
-        let ent_parent = *instance_id_mapping.get(parent).unwrap();
-        commands.entity(ent_parent).push_children(&[ent]);
-    }
-
-    for ent in deleted_entities {
-        let entity = *instance_id_mapping.get(&ent).unwrap();
-        commands.entity(entity).despawn();
-    }
-
-    for (child_id, (old_parent_id, parent_id)) in moved_entities {
-        let [entity, old_parent_ent, parent_ent]: [Entity; 3] =
-            [child_id, old_parent_id, parent_id]
-                .iter()
-                .map(|id| *instance_id_mapping.get(id).unwrap())
-                .collect::<Vec<Entity>>()
-                .try_into()
-                .unwrap();
-
-        commands.entity(old_parent_ent).remove_children(&[entity]);
-        commands.entity(parent_ent).push_children(&[entity]);
+        let mut ent_mapping: HashMap<i64, Entity> = HashMap::new();
+        traverse(root.upcast(), &mut ent_mapping, &mut commands);
     }
 }
 
-fn add_godot_names(
-    mut commands: Commands,
-    mut missing: Query<(Entity, &mut ErasedGodotRef), (Without<Name>, With<Children>)>,
-    _scene_tree: SceneTreeRef,
+#[derive(Debug)]
+pub struct SceneTreeEvent {
+    pub node: ErasedGodotRef,
+    pub event_type: SceneTreeEventType,
+}
+
+#[derive(ToVariant, FromVariant, Copy, Clone, Debug)]
+pub enum SceneTreeEventType {
+    NodeAdded,
+    NodeRemoved,
+    NodeRenamed,
+}
+
+fn connect_scene_tree(mut scene_tree: SceneTreeRef) {
+    let scene_tree = scene_tree.get();
+    let watcher = unsafe {
+        scene_tree
+            .root()
+            .unwrap()
+            .assume_safe()
+            .get_node("Autoload/SceneTreeWatcher")
+            .unwrap()
+    };
+
+    scene_tree
+        .connect(
+            "node_added",
+            watcher,
+            "scene_tree_event",
+            VariantArray::from_iter(&[SceneTreeEventType::NodeAdded]).into_shared(),
+            0,
+        )
+        .unwrap();
+
+    scene_tree
+        .connect(
+            "node_removed",
+            watcher,
+            "scene_tree_event",
+            VariantArray::from_iter(&[SceneTreeEventType::NodeRemoved]).into_shared(),
+            0,
+        )
+        .unwrap();
+
+    scene_tree
+        .connect(
+            "node_renamed",
+            watcher,
+            "scene_tree_event",
+            VariantArray::from_iter(&[SceneTreeEventType::NodeRenamed]).into_shared(),
+            0,
+        )
+        .unwrap();
+}
+
+#[doc(hidden)]
+pub struct SceneTreeEventReader(pub std::sync::mpsc::Receiver<SceneTreeEvent>);
+
+fn write_scene_tree_events(
+    event_reader: NonSendMut<SceneTreeEventReader>,
+    mut event_writer: EventWriter<SceneTreeEvent>,
 ) {
-    for (ent, mut reference) in missing.iter_mut() {
-        commands
-            .entity(ent)
-            .insert(Name::from(reference.get::<Node>().name().to_string()));
+    event_writer.send_batch(event_reader.0.try_iter());
+}
+
+fn read_scene_tree_events(
+    mut commands: Commands,
+    mut event_reader: EventReader<SceneTreeEvent>,
+    entities: Query<(&mut ErasedGodotRef, Entity)>,
+) {
+    for event in event_reader.iter() {
+        let mut node = event.node.clone();
+
+        let mut ent_mapping = entities
+            .iter()
+            .map(|(reference, ent)| (reference.instance_id(), ent))
+            .collect::<HashMap<_, _>>();
+        let ent = ent_mapping.get(&node.instance_id()).cloned();
+
+        match event.event_type {
+            SceneTreeEventType::NodeAdded => {
+                let mut ent = if let Some(ent) = ent {
+                    commands.entity(ent)
+                } else {
+                    commands.spawn()
+                };
+
+                ent.insert(node.clone())
+                    .insert(Name::from(node.get::<Node>().name().to_string()))
+                    .insert(Children::default());
+
+                let parent = unsafe {
+                    node.get::<Node>()
+                        .get_parent()
+                        .unwrap()
+                        .assume_safe()
+                        .get_instance_id()
+                };
+                ent.insert(Parent(*ent_mapping.get(&parent).unwrap()));
+
+                if let Some(spatial) = node.try_get::<Spatial>() {
+                    ent.insert(spatial.transform().to_bevy_transform());
+                }
+
+                let ent = ent.id();
+                ent_mapping.insert(node.instance_id(), ent);
+            }
+            SceneTreeEventType::NodeRemoved => {
+                commands.entity(ent.unwrap()).despawn_recursive();
+            }
+            SceneTreeEventType::NodeRenamed => {
+                commands
+                    .entity(ent.unwrap())
+                    .insert(Name::from(node.get::<Node>().name().to_string()));
+            }
+        }
     }
 }

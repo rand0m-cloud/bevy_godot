@@ -48,7 +48,7 @@ macro_rules! bevy_godot_init {
             let mut app = App::new();
             let (sender, reciever) = std::sync::mpsc::channel();
             app.add_plugin(bevy_godot::prelude::GodotPlugin)
-                .insert_non_send_resource(reciever);
+                .insert_non_send_resource(bevy_godot::prelude::SceneTreeEventReader(reciever));
             $app(&mut app);
 
             autoload.app = app;
@@ -57,6 +57,7 @@ macro_rules! bevy_godot_init {
             scene_tree_watcher
                 .map_mut(|script, base| script.notification_channel = Some(sender))
                 .unwrap();
+            scene_tree_watcher.base().set_name("SceneTreeWatcher");
 
             base.add_child(scene_tree_watcher.into_base().into_shared(), true);
         }
@@ -64,7 +65,8 @@ macro_rules! bevy_godot_init {
         #[derive(NativeClass, Default)]
         #[inherit(Node)]
         struct SceneTreeWatcher {
-            notification_channel: Option<std::sync::mpsc::Sender<()>>,
+            notification_channel:
+                Option<std::sync::mpsc::Sender<bevy_godot::prelude::SceneTreeEvent>>,
         }
 
         #[methods]
@@ -74,27 +76,22 @@ macro_rules! bevy_godot_init {
             }
 
             #[export]
-            fn _ready(&self, base: TRef<Node>) {
-                unsafe {
-                    base.get_tree()
-                        .unwrap()
-                        .assume_safe()
-                        .connect(
-                            "tree_changed",
-                            base,
-                            "scene_tree_modified",
-                            VariantArray::default(),
-                            0,
-                        )
-                        .unwrap()
-                };
-            }
-
-            #[export]
-            fn scene_tree_modified(&self, _base: TRef<Node>) {
-                if let Some(channel) = self.notification_channel.clone() {
-                    channel.send(()).unwrap()
-                };
+            fn scene_tree_event(
+                &self,
+                _base: TRef<Node>,
+                node: Ref<Node>,
+                event_type: bevy_godot::prelude::SceneTreeEventType,
+            ) {
+                self.notification_channel
+                    .as_ref()
+                    .unwrap()
+                    .send(bevy_godot::prelude::SceneTreeEvent {
+                        node: unsafe {
+                            ErasedGodotRef::from_instance_id(node.assume_safe().get_instance_id())
+                        },
+                        event_type,
+                    })
+                    .unwrap();
             }
         }
 
