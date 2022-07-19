@@ -33,6 +33,6 @@ fn move_cubes(
 ) {
     for (cube, mut transform) in cubes.iter_mut() {
         transform.translation =
-            5.0 * f64::sin(time.seconds_since_startup()) as f32 * Vec3::X + cube.starting_position;
+            5.0 * time.seconds_since_startup().sin() as f32 * Vec3::X + cube.starting_position;
     }
 }
