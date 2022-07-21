@@ -182,7 +182,7 @@ impl std::ops::Deref for Groups {
 
 impl Groups {
     pub fn is(&self, group_name: &str) -> bool {
-        self.groups.iter().any(|name| name == &group_name)
+        self.groups.iter().any(|name| name == group_name)
     }
 }
 
