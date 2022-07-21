@@ -1,6 +1,6 @@
 use crate::prelude::{
     bevy_prelude::{EventReader, EventWriter, NonSendMut},
-    godot_prelude::*,
+    godot_prelude::{FromVariant, SubClass, ToVariant, VariantArray},
     *,
 };
 use bevy::ecs::system::SystemParam;
@@ -67,13 +67,18 @@ fn initialize_scene_tree(mut commands: Commands, mut scene_tree: SceneTreeRef) {
         let mut ent = commands.spawn();
         ent.insert(ErasedGodotRef::new(node.assume_unique()))
             .insert(Name::from(node.name().to_string()))
-            .insert(Children::default());
+            .insert(Children::default())
+            .insert(Groups::from(&*node));
 
         if let Some(parent_ent) = node
             .get_parent()
             .and_then(|parent| ent_mapping.get(&parent.assume_safe().get_instance_id()))
         {
             ent.insert(Parent(*parent_ent));
+        }
+
+        if let Some(spatial) = node.cast::<Spatial>() {
+            ent.insert(Transform::from(spatial.transform()));
         }
 
         let ent = ent.id();
@@ -150,6 +155,37 @@ fn connect_scene_tree(mut scene_tree: SceneTreeRef) {
         .unwrap();
 }
 
+#[derive(Component, Debug)]
+pub struct Groups {
+    groups: Vec<String>,
+}
+
+impl<T: SubClass<Node>> From<&T> for Groups {
+    fn from(node: &T) -> Self {
+        Groups {
+            groups: node
+                .upcast::<Node>()
+                .get_groups()
+                .iter()
+                .map(|variant| variant.try_to::<String>().unwrap())
+                .collect(),
+        }
+    }
+}
+
+impl std::ops::Deref for Groups {
+    type Target = [String];
+    fn deref(&self) -> &Self::Target {
+        &self.groups
+    }
+}
+
+impl Groups {
+    pub fn is(&self, group_name: &str) -> bool {
+        self.groups.iter().any(|name| name == &group_name)
+    }
+}
+
 #[doc(hidden)]
 pub struct SceneTreeEventReader(pub std::sync::mpsc::Receiver<SceneTreeEvent>);
 
@@ -198,6 +234,8 @@ fn read_scene_tree_events(
                 if let Some(spatial) = node.try_get::<Spatial>() {
                     ent.insert(spatial.transform().to_bevy_transform());
                 }
+
+                ent.insert(Groups::from(&*node.get::<Node>()));
 
                 let ent = ent.id();
                 ent_mapping.insert(node.instance_id(), ent);

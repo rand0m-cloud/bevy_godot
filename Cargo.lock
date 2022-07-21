@@ -1610,6 +1610,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "physics_demo"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_godot",
+ "gdnative",
+]
+
+[[package]]
 name = "pin-project-lite"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"

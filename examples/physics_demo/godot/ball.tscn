@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="SphereShape" id=1]
+
+[node name="Ball" type="RigidBody" groups=["ball"]]
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 1 )
+
+[node name="CSGSphere" type="CSGSphere" parent="."]
+radial_segments = 8
+rings = 10

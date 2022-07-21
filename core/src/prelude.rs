@@ -14,7 +14,8 @@ pub use bevy_prelude::{
     ResMut, Time, Timer, Transform as BevyTransform, Vec3,
 };
 pub use godot_prelude::{
-    api::*, godot_init, methods, InitHandle, NativeClass, Ref, TRef, Transform as GodotTransform,
+    api::*, godot_init, methods, GodotObject, InitHandle, NativeClass, Ref, TRef,
+    Transform as GodotTransform,
 };
 
 pub use crate::bevy_godot_init;
