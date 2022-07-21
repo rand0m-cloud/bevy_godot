@@ -49,11 +49,11 @@ fn spawn_cube(
                 lifetime: Timer::from_seconds(3.0, false),
             })
             .insert(unsafe { ErasedGodotRef::new(csg_node.assume_unique()) })
-            .insert(Transform::from_translation(Vec3::new(
+            .insert(Transform::from(BevyTransform::from_translation(Vec3::new(
                 10.0 * f64::sin(time.seconds_since_startup()) as f32,
                 5.0 * f32::sin(time.seconds_since_startup() as f32),
                 -8.0 + -1.0 * time.seconds_since_startup() as f32,
-            )))
+            ))))
             .insert(Children::default());
     }
 }

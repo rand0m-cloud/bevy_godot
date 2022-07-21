@@ -22,7 +22,9 @@ fn spawn_cube(mut commands: Commands, _scene_tree: SceneTreeRef) {
             .insert(GodotScene::from_path("res://simple_scene.tscn"))
             .insert(Cube { starting_position })
             .insert(Children::default())
-            .insert(Transform::from_translation(starting_position));
+            .insert(Transform::from(BevyTransform::from_translation(
+                starting_position,
+            )));
     }
 }
 
@@ -32,7 +34,7 @@ fn move_cubes(
     _scene_tree: SceneTreeRef,
 ) {
     for (cube, mut transform) in cubes.iter_mut() {
-        transform.translation =
+        transform.as_bevy_mut().translation =
             5.0 * time.seconds_since_startup().sin() as f32 * Vec3::X + cube.starting_position;
     }
 }

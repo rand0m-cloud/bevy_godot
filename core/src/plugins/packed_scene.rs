@@ -1,4 +1,8 @@
-use crate::prelude::*;
+use crate::prelude::{
+    bevy_prelude::*,
+    godot_prelude::{PackedScene, ResourceLoader},
+    *,
+};
 use gdnative::api::packed_scene::GenEditState;
 
 pub struct PackedScenePlugin;

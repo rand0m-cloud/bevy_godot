@@ -1,4 +1,8 @@
-use crate::prelude::*;
+use crate::prelude::{
+    bevy_prelude::{EventReader, EventWriter, NonSendMut},
+    godot_prelude::*,
+    *,
+};
 use bevy::ecs::system::SystemParam;
 use gdnative::api::Engine;
 use std::collections::HashMap;

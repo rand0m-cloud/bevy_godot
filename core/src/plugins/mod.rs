@@ -1,6 +1,5 @@
 pub mod core;
 pub mod packed_scene;
-pub mod prelude;
 
 use bevy::app::*;
 
