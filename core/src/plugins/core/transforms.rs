@@ -172,7 +172,9 @@ fn post_update_godot_transforms(
 ) {
     for (transform, mut reference) in entities.iter_mut() {
         let obj = reference.get::<Spatial>();
-        obj.set_transform(*transform.as_godot());
+        if obj.transform() != *transform.as_godot() {
+            obj.set_transform(*transform.as_godot());
+        }
     }
 }
 
