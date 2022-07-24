@@ -9,7 +9,7 @@ pub struct PackedScenePlugin;
 
 impl Plugin for PackedScenePlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_to_stage(GodotStage::AfterBevy, spawn_scene)
+        app.add_system_to_stage(CoreStage::PostUpdate, spawn_scene)
             .register_type::<GodotScene>();
     }
 }

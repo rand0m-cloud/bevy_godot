@@ -1,8 +1,9 @@
 use crate::prelude::{
-    bevy_prelude::{EventReader, EventWriter, NonSendMut},
+    bevy_prelude::{CoreStage, EventReader, EventWriter, NonSendMut},
     godot_prelude::{FromVariant, SubClass, ToVariant, VariantArray},
     *,
 };
+use bevy::ecs::event::Events;
 use bevy::ecs::system::SystemParam;
 use gdnative::api::Engine;
 use std::collections::HashMap;
@@ -14,10 +15,13 @@ impl Plugin for GodotSceneTreePlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(initialize_scene_tree)
             .add_startup_system(connect_scene_tree)
-            .add_system_to_stage(GodotStage::SceneTreeUpdate, write_scene_tree_events)
             .add_system_to_stage(
-                GodotStage::SceneTreeUpdate,
-                read_scene_tree_events.after(write_scene_tree_events),
+                CoreStage::First,
+                write_scene_tree_events.before(Events::<SceneTreeEvent>::update_system),
+            )
+            .add_system_to_stage(
+                CoreStage::First,
+                read_scene_tree_events.after(Events::<SceneTreeEvent>::update_system),
             )
             .add_event::<SceneTreeEvent>()
             .init_non_send_resource::<SceneTreeRefImpl>();
@@ -58,45 +62,27 @@ impl Default for SceneTreeRefImpl {
     }
 }
 
-fn initialize_scene_tree(mut commands: Commands, mut scene_tree: SceneTreeRef) {
-    unsafe fn traverse(
-        node: TRef<Node>,
-        ent_mapping: &mut HashMap<i64, Entity>,
-        commands: &mut Commands,
-    ) {
-        let mut ent = commands.spawn();
-        ent.insert(ErasedGodotRef::new(node.assume_unique()))
-            .insert(Name::from(node.name().to_string()))
-            .insert(Children::default())
-            .insert(Groups::from(&*node));
-
-        if let Some(parent_ent) = node
-            .get_parent()
-            .and_then(|parent| ent_mapping.get(&parent.assume_safe().get_instance_id()))
-        {
-            ent.insert(Parent(*parent_ent));
-        }
-
-        if let Some(spatial) = node.cast::<Spatial>() {
-            ent.insert(Transform::from(spatial.transform()));
-        }
-
-        let ent = ent.id();
-        ent_mapping.insert(node.get_instance_id(), ent);
-
-        node.get_children()
-            .assume_unique()
-            .into_iter()
-            .for_each(|child| {
-                let child = child.to_object::<Node>().unwrap().assume_safe();
-                traverse(child, ent_mapping, commands);
+fn initialize_scene_tree(mut scene_tree: SceneTreeRef, mut events: ResMut<Events<SceneTreeEvent>>) {
+    fn traverse(node: TRef<Node>, events: &mut ResMut<Events<SceneTreeEvent>>) {
+        unsafe {
+            events.send(SceneTreeEvent {
+                node: ErasedGodotRef::from_instance_id(node.get_instance_id()),
+                event_type: SceneTreeEventType::NodeAdded,
             });
+
+            node.get_children()
+                .assume_unique()
+                .into_iter()
+                .for_each(|child| {
+                    let child = child.to_object::<Node>().unwrap().assume_safe();
+                    traverse(child, events);
+                });
+        }
     }
 
     unsafe {
         let root = scene_tree.get().root().unwrap().assume_safe();
-        let mut ent_mapping: HashMap<i64, Entity> = HashMap::new();
-        traverse(root.upcast(), &mut ent_mapping, &mut commands);
+        traverse(root.upcast(), &mut events);
     }
 }
 
@@ -198,17 +184,27 @@ fn write_scene_tree_events(
 
 fn read_scene_tree_events(
     mut commands: Commands,
+    mut scene_tree: SceneTreeRef,
     mut event_reader: EventReader<SceneTreeEvent>,
     entities: Query<(&mut ErasedGodotRef, Entity)>,
 ) {
+    let mut ent_mapping = entities
+        .iter()
+        .map(|(reference, ent)| (reference.instance_id(), ent))
+        .collect::<HashMap<_, _>>();
+
     for event in event_reader.iter() {
         let mut node = event.node.clone();
 
-        let mut ent_mapping = entities
-            .iter()
-            .map(|(reference, ent)| (reference.instance_id(), ent))
-            .collect::<HashMap<_, _>>();
         let ent = ent_mapping.get(&node.instance_id()).cloned();
+        let scene_root_id = unsafe {
+            scene_tree
+                .get()
+                .root()
+                .unwrap()
+                .assume_safe()
+                .get_instance_id()
+        };
 
         match event.event_type {
             SceneTreeEventType::NodeAdded => {
@@ -218,18 +214,20 @@ fn read_scene_tree_events(
                     commands.spawn()
                 };
 
-                ent.insert(node.clone())
+                ent.insert(ErasedGodotRef::clone(&node))
                     .insert(Name::from(node.get::<Node>().name().to_string()))
                     .insert(Children::default());
 
-                let parent = unsafe {
-                    node.get::<Node>()
-                        .get_parent()
-                        .unwrap()
-                        .assume_safe()
-                        .get_instance_id()
-                };
-                ent.insert(Parent(*ent_mapping.get(&parent).unwrap()));
+                if node.instance_id() != scene_root_id {
+                    let parent = unsafe {
+                        node.get::<Node>()
+                            .get_parent()
+                            .unwrap()
+                            .assume_safe()
+                            .get_instance_id()
+                    };
+                    ent.insert(Parent(*ent_mapping.get(&parent).unwrap()));
+                }
 
                 if let Some(spatial) = node.try_get::<Spatial>() {
                     ent.insert(spatial.transform().to_bevy_transform());

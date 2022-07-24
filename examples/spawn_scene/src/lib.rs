@@ -3,8 +3,7 @@ use bevy_godot::prelude::*;
 fn init(_handle: &InitHandle) {}
 
 fn build_app(app: &mut App) {
-    app.add_startup_system(spawn_cube)
-        .add_godot_system(move_cubes);
+    app.add_startup_system(spawn_cube).add_system(move_cubes);
 }
 
 bevy_godot_init!(init, build_app);

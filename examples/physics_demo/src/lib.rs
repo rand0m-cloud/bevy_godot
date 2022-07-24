@@ -6,7 +6,7 @@ use bevy_godot::prelude::*;
 fn init(_handle: &InitHandle) {}
 
 fn build_app(app: &mut App) {
-    app.add_godot_system(print_balls_position)
+    app.add_system(print_balls_position)
         .insert_resource(PrintEntitiesTimer(Timer::from_seconds(0.1, true)));
 }
 
