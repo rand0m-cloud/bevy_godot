@@ -4,7 +4,7 @@ A crate for using [Bevy](https://github.com/bevyengine/bevy) with the [Godot Eng
 ## Features
 - Godot SceneTree integration
 - Detect Godot object collisions
-- Spawn scenes from Bevy
+- Spawn Godot scenes from Bevy
 
 ## Quickstart
 Browse the examples to get a feel for the API. The examples are `cargo run`-able if a `godot` executable is present in your enviroment path.
