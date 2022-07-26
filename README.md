@@ -2,7 +2,7 @@
 A crate for using [Bevy](https://github.com/bevyengine/bevy) with the [Godot Engine](https://godotengine.org). This crate is in active development and is not ready for production use.
 
 ## Features
-- Godot's SceneTree is integrated
+- Godot SceneTree integration
 - Detect Godot object collisions
 - Spawn scenes from Bevy
 
