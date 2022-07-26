@@ -50,8 +50,8 @@ fn spawn_cube(
             })
             .insert(unsafe { ErasedGodotRef::new(csg_node.assume_unique()) })
             .insert(Transform::from(BevyTransform::from_translation(Vec3::new(
-                10.0 * f64::sin(time.seconds_since_startup()) as f32,
-                5.0 * f32::sin(time.seconds_since_startup() as f32),
+                10.0 * time.seconds_since_startup().sin() as f32,
+                5.0 * time.seconds_since_startup().sin() as f32,
                 -8.0 + -1.0 * time.seconds_since_startup() as f32,
             ))))
             .insert(Children::default());

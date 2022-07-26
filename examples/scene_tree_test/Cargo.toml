@@ -2,10 +2,11 @@
 name = "scene_tree_test"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
 
 [[bin]]
 path = "../run_godot.rs"
-name = "godot"
+name = "run_scene_tree_test"
 
 [lib]
 crate-type = ["cdylib"]
