@@ -1,5 +1,5 @@
 use crate::prelude::{
-    bevy_prelude::{debug, CoreStage, EventReader, EventWriter, NonSendMut},
+    bevy_prelude::{debug, trace, CoreStage, EventReader, EventWriter, NonSendMut},
     godot_prelude::{FromVariant, SubClass, ToVariant, Variant, VariantArray},
     *,
 };
@@ -194,6 +194,8 @@ fn read_scene_tree_events(
         .collect::<HashMap<_, _>>();
 
     for event in event_reader.iter() {
+        trace!(target: "godot_scene_tree_events", event = ?event);
+
         let mut node = event.node.clone();
 
         let ent = ent_mapping.get(&node.instance_id()).cloned();
