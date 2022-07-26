@@ -42,7 +42,7 @@ fn print_ball_collisions(
             continue;
         }
 
-        if collisions.recent_collisions().len() > 0 {
+        if !collisions.recent_collisions().is_empty() {
             for other in collisions.recent_collisions() {
                 println!(
                     "{} collided with {}",
