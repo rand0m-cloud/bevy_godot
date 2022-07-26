@@ -230,7 +230,7 @@ fn read_scene_tree_events(
                 }
 
                 if let Some(spatial) = node.try_get::<Spatial>() {
-                    ent.insert(spatial.transform().to_bevy_transform());
+                    ent.insert(Transform::from(spatial.transform().to_bevy_transform()));
                 }
 
                 ent.insert(Groups::from(&*node.get::<Node>()));
