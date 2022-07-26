@@ -41,25 +41,43 @@ macro_rules! bevy_godot_init {
         fn __godot_init(init: InitHandle) {
             init.add_class::<Autoload>();
             init.add_class::<SceneTreeWatcher>();
+            init.add_class::<CollisionWatcher>();
             $init(&init);
         }
 
         fn __app(autoload: &mut Autoload, base: &Node) {
             let mut app = App::new();
-            let (sender, reciever) = std::sync::mpsc::channel();
-            app.add_plugin(bevy_godot::prelude::GodotPlugin)
-                .insert_non_send_resource(bevy_godot::prelude::SceneTreeEventReader(reciever));
+            app.add_plugin(bevy_godot::prelude::GodotPlugin);
+
             $app(&mut app);
 
+            {
+                let (sender, reciever) = std::sync::mpsc::channel();
+                let scene_tree_watcher = SceneTreeWatcher::new_instance();
+                scene_tree_watcher
+                    .map_mut(|script, base| script.notification_channel = Some(sender))
+                    .unwrap();
+                scene_tree_watcher.base().set_name("SceneTreeWatcher");
+
+                base.add_child(scene_tree_watcher.into_base().into_shared(), true);
+
+                app.insert_non_send_resource(bevy_godot::prelude::SceneTreeEventReader(reciever));
+            }
+
+            {
+                let (sender, reciever) = std::sync::mpsc::channel();
+                let collision_watcher = CollisionWatcher::new_instance();
+                collision_watcher
+                    .map_mut(|script, base| script.notification_channel = Some(sender))
+                    .unwrap();
+                collision_watcher.base().set_name("CollisionWatcher");
+
+                base.add_child(collision_watcher.into_base().into_shared(), true);
+
+                app.insert_non_send_resource(bevy_godot::prelude::CollisionEventReader(reciever));
+            }
+
             autoload.app = app;
-
-            let scene_tree_watcher = SceneTreeWatcher::new_instance();
-            scene_tree_watcher
-                .map_mut(|script, base| script.notification_channel = Some(sender))
-                .unwrap();
-            scene_tree_watcher.base().set_name("SceneTreeWatcher");
-
-            base.add_child(scene_tree_watcher.into_base().into_shared(), true);
         }
 
         #[derive(NativeClass, Default)]
@@ -90,6 +108,40 @@ macro_rules! bevy_godot_init {
                             ErasedGodotRef::from_instance_id(node.assume_safe().get_instance_id())
                         },
                         event_type,
+                    })
+                    .unwrap();
+            }
+        }
+
+        #[derive(NativeClass, Default)]
+        #[inherit(Node)]
+        struct CollisionWatcher {
+            notification_channel:
+                Option<std::sync::mpsc::Sender<bevy_godot::prelude::CollisionEvent>>,
+        }
+
+        #[methods]
+        impl CollisionWatcher {
+            fn new(_base: &Node) -> Self {
+                Self::default()
+            }
+
+            #[export]
+            fn collision_event(
+                &self,
+                _base: TRef<Node>,
+                target: Ref<Node>,
+                origin: Ref<Node>,
+                event_type: bevy_godot::prelude::CollisionEventType,
+            ) {
+                let (origin, target) = unsafe { (origin.assume_safe(), target.assume_safe()) };
+                self.notification_channel
+                    .as_ref()
+                    .unwrap()
+                    .send(bevy_godot::prelude::CollisionEvent {
+                        event_type,
+                        origin: origin.get_instance_id(),
+                        target: target.get_instance_id(),
                     })
                     .unwrap();
             }

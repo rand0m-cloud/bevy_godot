@@ -1,6 +1,6 @@
 use crate::prelude::{
-    bevy_prelude::{CoreStage, EventReader, EventWriter, NonSendMut},
-    godot_prelude::{FromVariant, SubClass, ToVariant, VariantArray},
+    bevy_prelude::{debug, CoreStage, EventReader, EventWriter, NonSendMut},
+    godot_prelude::{FromVariant, SubClass, ToVariant, Variant, VariantArray},
     *,
 };
 use bevy::ecs::event::Events;
@@ -197,13 +197,12 @@ fn read_scene_tree_events(
         let mut node = event.node.clone();
 
         let ent = ent_mapping.get(&node.instance_id()).cloned();
-        let scene_root_id = unsafe {
-            scene_tree
-                .get()
-                .root()
+        let scene_root = unsafe { scene_tree.get().root().unwrap().assume_safe() };
+        let collision_watcher = unsafe {
+            scene_root
+                .get_node("/root/Autoload/CollisionWatcher")
                 .unwrap()
                 .assume_safe()
-                .get_instance_id()
         };
 
         match event.event_type {
@@ -218,7 +217,7 @@ fn read_scene_tree_events(
                     .insert(Name::from(node.get::<Node>().name().to_string()))
                     .insert(Children::default());
 
-                if node.instance_id() != scene_root_id {
+                if node.instance_id() != scene_root.get_instance_id() {
                     let parent = unsafe {
                         node.get::<Node>()
                             .get_parent()
@@ -231,6 +230,40 @@ fn read_scene_tree_events(
 
                 if let Some(spatial) = node.try_get::<Spatial>() {
                     ent.insert(Transform::from(spatial.transform().to_bevy_transform()));
+                }
+
+                if let Some(physics_body) = node.try_get::<PhysicsBody>() {
+                    if physics_body.has_signal("body_entered") {
+                        debug!(target: "godot_scene_tree_collisions", body_id = physics_body.get_instance_id(), "has body_entered signal");
+                        physics_body
+                            .connect(
+                                "body_entered",
+                                collision_watcher,
+                                "collision_event",
+                                VariantArray::from_iter(&[
+                                    Variant::new(physics_body.claim()),
+                                    Variant::new(CollisionEventType::Started),
+                                ])
+                                .into_shared(),
+                                0,
+                            )
+                            .unwrap();
+                        physics_body
+                            .connect(
+                                "body_exited",
+                                collision_watcher,
+                                "collision_event",
+                                VariantArray::from_iter(&[
+                                    Variant::new(physics_body.claim()),
+                                    Variant::new(CollisionEventType::Ended),
+                                ])
+                                .into_shared(),
+                                0,
+                            )
+                            .unwrap();
+
+                        ent.insert(Collisions::default());
+                    }
                 }
 
                 ent.insert(Groups::from(&*node.get::<Node>()));

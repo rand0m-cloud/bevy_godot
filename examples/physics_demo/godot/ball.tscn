@@ -3,6 +3,8 @@
 [sub_resource type="SphereShape" id=1]
 
 [node name="Ball" type="RigidBody" groups=["ball"]]
+contacts_reported = 16
+contact_monitor = true
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 1 )

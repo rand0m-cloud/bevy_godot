@@ -11,6 +11,9 @@ pub use transforms::{Transform, *};
 pub mod scene_tree;
 pub use scene_tree::*;
 
+pub mod collisions;
+pub use collisions::*;
+
 pub struct GodotCorePlugin;
 
 impl Plugin for GodotCorePlugin {
@@ -28,6 +31,7 @@ impl Plugin for GodotCorePlugin {
             group
         })
         .add_plugin(GodotSceneTreePlugin)
-        .add_plugin(GodotTransformsPlugin);
+        .add_plugin(GodotTransformsPlugin)
+        .add_plugin(GodotCollisionsPlugin);
     }
 }
