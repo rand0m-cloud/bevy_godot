@@ -2,10 +2,11 @@
 name = "physics_demo"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
 
 [[bin]]
 path = "../run_godot.rs"
-name = "godot"
+name = "run_physics_demo"
 
 [lib]
 crate-type = ["cdylib"]

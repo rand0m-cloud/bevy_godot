@@ -2,10 +2,11 @@
 name = "spawn_scene"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
 
 [[bin]]
 path = "../run_godot.rs"
-name = "godot"
+name = "run_spawn_scene"
 
 [lib]
 crate-type = ["cdylib"]
