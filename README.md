@@ -9,3 +9,8 @@ A crate for using [Bevy](https://github.com/bevyengine/bevy) with the [Godot Eng
 
 ## Quickstart
 Browse the examples to get a feel for the API. The examples are `cargo run`-able if a `godot` executable is present in your enviroment path.
+
+For a new Godot project, use one of the examples as a starting point. This crate requires the provided `Autoload` class to be added to the project's autoloads.
+
+## Supported Godot Versions
+This library depends on [godot-rust](https://github.com/godot-rust/godot-rust) for the Godot API and follows their [compatibility guidelines](https://github.com/godot-rust/godot-rust#engine-compatibility).
