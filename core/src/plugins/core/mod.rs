@@ -1,7 +1,5 @@
-use bevy::{
-    app::*, asset::AssetPlugin, input::InputPlugin, prelude::*, scene::ScenePlugin,
-    window::WindowPlugin,
-};
+use bevy::app::*;
+
 pub mod godot_ref;
 pub use godot_ref::*;
 
@@ -18,20 +16,11 @@ pub struct GodotCorePlugin;
 
 impl Plugin for GodotCorePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins_with(DefaultPlugins, |group| {
-            group
-                .disable::<InputPlugin>()
-                .disable::<WindowPlugin>()
-                .disable::<AssetPlugin>()
-                .disable::<ScenePlugin>();
-
-            #[cfg(feature = "trace")]
-            group.disable::<bevy::render::RenderPlugin>();
-
-            group
-        })
-        .add_plugin(GodotSceneTreePlugin)
-        .add_plugin(GodotTransformsPlugin)
-        .add_plugin(GodotCollisionsPlugin);
+        app.add_plugin(bevy::core::CorePlugin)
+            .add_plugin(bevy::log::LogPlugin)
+            .add_plugin(bevy::diagnostic::DiagnosticsPlugin)
+            .add_plugin(GodotSceneTreePlugin)
+            .add_plugin(GodotTransformsPlugin)
+            .add_plugin(GodotCollisionsPlugin);
     }
 }
