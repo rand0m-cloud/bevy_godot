@@ -12,6 +12,9 @@ pub use scene_tree::*;
 pub mod collisions;
 pub use collisions::*;
 
+pub mod signals;
+pub use signals::*;
+
 pub struct GodotCorePlugin;
 
 impl Plugin for GodotCorePlugin {
@@ -21,6 +24,7 @@ impl Plugin for GodotCorePlugin {
             .add_plugin(bevy::diagnostic::DiagnosticsPlugin)
             .add_plugin(GodotSceneTreePlugin)
             .add_plugin(GodotTransformsPlugin)
-            .add_plugin(GodotCollisionsPlugin);
+            .add_plugin(GodotCollisionsPlugin)
+            .add_plugin(GodotSignalsPlugin);
     }
 }

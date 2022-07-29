@@ -1,0 +1,17 @@
+[package]
+name = "dodge_the_creeps"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[[bin]]
+path = "../run_godot.rs"
+name = "run_dodge_the_creeps"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+gdnative = "0.10"
+bevy = {version = "0.7", default-features = false}
+bevy_godot = {path = "../../core", features= ["trace", "trace_chrome"]}

@@ -854,6 +854,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "dodge_the_creeps"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_godot",
+ "gdnative",
+]
+
+[[package]]
 name = "downcast-rs"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
