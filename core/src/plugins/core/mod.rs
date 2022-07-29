@@ -4,7 +4,7 @@ pub mod godot_ref;
 pub use godot_ref::*;
 
 pub mod transforms;
-pub use transforms::{Transform, *};
+pub use transforms::{Transform, Transform2D, *};
 
 pub mod scene_tree;
 pub use scene_tree::*;

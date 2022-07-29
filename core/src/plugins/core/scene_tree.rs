@@ -241,6 +241,16 @@ fn create_scene_tree_entity(
                     ent.insert(Transform::from(spatial.transform().to_bevy_transform()));
                 }
 
+                if let Some(node2d) = node.try_get::<Node2D>() {
+                    ent.insert(Transform2D::from(
+                        GodotTransform2D::from_rotation_translation_scale(
+                            node2d.position(),
+                            node2d.rotation() as f32,
+                            node2d.scale(),
+                        ),
+                    ));
+                }
+
                 if let Some(physics_body) = node.try_get::<PhysicsBody>() {
                     if physics_body.has_signal("body_entered") {
                         debug!(target: "godot_scene_tree_collisions", body_id = physics_body.get_instance_id(), "has body_entered signal");

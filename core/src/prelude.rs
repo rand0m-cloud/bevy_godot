@@ -15,7 +15,7 @@ pub use bevy_prelude::{
 };
 pub use godot_prelude::{
     api::*, godot_init, methods, GodotObject, InitHandle, NativeClass, Ref, TRef,
-    Transform as GodotTransform,
+    Transform as GodotTransform, Transform2D as GodotTransform2D,
 };
 
 pub use crate::bevy_godot_init;
