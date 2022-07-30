@@ -181,9 +181,9 @@ pub struct GodotTransformsPlugin;
 
 impl Plugin for GodotTransformsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_to_stage(CoreStage::PostUpdate, post_update_godot_transforms)
+        app.add_system_to_stage(CoreStage::Last, post_update_godot_transforms)
             .add_system_to_stage(CoreStage::PreUpdate, pre_update_godot_transforms)
-            .add_system_to_stage(CoreStage::PostUpdate, post_update_godot_transforms_2d)
+            .add_system_to_stage(CoreStage::Last, post_update_godot_transforms_2d)
             .add_system_to_stage(CoreStage::PreUpdate, pre_update_godot_transforms_2d);
     }
 }
