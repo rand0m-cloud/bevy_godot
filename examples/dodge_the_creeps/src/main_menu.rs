@@ -45,7 +45,7 @@ fn listen_for_play_button(
 }
 
 fn hide_main_menu(mut entities: Query<(&Name, &mut ErasedGodotRef)>) {
-    let mut play_button = entities
+    let mut main_menu = entities
         .iter_mut()
         .find_map(|(name, reference)| {
             if name.as_str() == "MainMenu" {
@@ -56,5 +56,5 @@ fn hide_main_menu(mut entities: Query<(&Name, &mut ErasedGodotRef)>) {
         })
         .unwrap();
 
-    play_button.get::<Control>().set_visible(false);
+    main_menu.get::<Control>().set_visible(false);
 }
