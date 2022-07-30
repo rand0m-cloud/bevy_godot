@@ -242,13 +242,12 @@ fn create_scene_tree_entity(
                 }
 
                 if let Some(node2d) = node.try_get::<Node2D>() {
-                    ent.insert(Transform2D::from(
-                        GodotTransform2D::from_rotation_translation_scale(
-                            node2d.position(),
-                            node2d.rotation() as f32,
-                            node2d.scale(),
-                        ),
-                    ));
+                    // gdnative's Transform2D has buggy modifiers
+                    let mut transform = GodotTransform2D::IDENTITY.translated(node2d.position());
+                    transform.set_scale(node2d.scale());
+                    transform.set_rotation(node2d.rotation() as f32);
+
+                    ent.insert(Transform2D::from(transform));
                 }
 
                 if let Some(physics_body) = node.try_get::<PhysicsBody>() {

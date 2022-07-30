@@ -224,11 +224,10 @@ fn post_update_godot_transforms_2d(
 ) {
     for (transform, mut reference) in entities.iter_mut() {
         let obj = reference.get::<Node2D>();
-        let obj_transform = GodotTransform2D::from_rotation_translation_scale(
-            obj.position(),
-            obj.rotation() as f32,
-            obj.scale(),
-        );
+
+        let mut obj_transform = GodotTransform2D::IDENTITY.translated(obj.position());
+        obj_transform.set_rotation(obj.rotation() as f32);
+        obj_transform.set_scale(obj.scale());
 
         if obj_transform != **transform {
             obj.set_transform(**transform);
@@ -242,11 +241,10 @@ fn pre_update_godot_transforms_2d(
 ) {
     for (mut transform, mut reference) in entities.iter_mut() {
         let obj = reference.get::<Node2D>();
-        let obj_transform = GodotTransform2D::from_rotation_translation_scale(
-            obj.position(),
-            obj.rotation() as f32,
-            obj.scale(),
-        );
+
+        let mut obj_transform = GodotTransform2D::IDENTITY.translated(obj.position());
+        obj_transform.set_rotation(obj.rotation() as f32);
+        obj_transform.set_scale(obj.scale());
 
         if obj_transform != **transform {
             **transform = obj_transform;
