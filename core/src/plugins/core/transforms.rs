@@ -155,7 +155,6 @@ impl IntoGodotTransform for bevy::prelude::Transform {
 }
 
 #[derive(Debug, Component, Clone, Copy)]
-
 pub struct Transform2D(pub gdnative::prelude::Transform2D);
 
 impl From<gdnative::prelude::Transform2D> for Transform2D {

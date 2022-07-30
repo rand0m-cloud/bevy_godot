@@ -15,6 +15,7 @@ impl Plugin for ScorePlugin {
 }
 
 pub struct ScoreTimer(Timer);
+
 fn reset_score(mut score: ResMut<Score>) {
     score.0 = 0;
 }

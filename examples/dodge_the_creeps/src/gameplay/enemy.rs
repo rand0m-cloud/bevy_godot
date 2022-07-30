@@ -71,7 +71,7 @@ fn new_mob(
     for (mob_data, mut mob) in entities.iter_mut() {
         let mob = mob.get::<RigidBody2D>();
 
-        let velocity = Vector2::new(fastrand::f32() * 100.0 + 150., 0.0);
+        let velocity = Vector2::new(fastrand::f32() * 100.0 + 150.0, 0.0);
         mob.set_linear_velocity(velocity.rotated(mob_data.direction as f32));
 
         let animated_sprite = unsafe {
