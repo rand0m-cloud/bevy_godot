@@ -184,6 +184,7 @@ macro_rules! bevy_godot_init {
                     Self::default()
                 }
 
+                #[allow(clippy::too_many_arguments)]
                 #[export]
                 fn event(
                     &self,

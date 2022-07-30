@@ -14,4 +14,5 @@ crate-type = ["cdylib"]
 [dependencies]
 gdnative = "0.10"
 bevy = {version = "0.7", default-features = false}
-bevy_godot = {path = "../../core", features= ["trace", "trace_chrome"]}
+bevy_godot = {path = "../../core", features= ["trace_chrome"]}
+fastrand = "1.8.0"

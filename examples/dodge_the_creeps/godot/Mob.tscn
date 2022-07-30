@@ -1,6 +1,5 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://Mob.gd" type="Script" id=1]
 [ext_resource path="res://art/enemyFlyingAlt_1.png" type="Texture" id=2]
 [ext_resource path="res://art/enemyFlyingAlt_2.png" type="Texture" id=3]
 [ext_resource path="res://art/enemyWalking_1.png" type="Texture" id=4]
@@ -33,7 +32,6 @@ height = 23.3281
 [node name="Mob" type="RigidBody2D" groups=["mobs"]]
 collision_mask = 0
 gravity_scale = 0.0
-script = ExtResource( 1 )
 __meta__ = {
 "_edit_group_": true
 }
@@ -48,5 +46,3 @@ rotation = 1.5708
 shape = SubResource( 2 )
 
 [node name="VisibilityNotifier2D" type="VisibilityNotifier2D" parent="."]
-
-[connection signal="screen_exited" from="VisibilityNotifier2D" to="." method="_on_VisibilityNotifier2D_screen_exited"]
