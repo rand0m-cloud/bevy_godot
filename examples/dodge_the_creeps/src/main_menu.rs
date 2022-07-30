@@ -39,7 +39,7 @@ fn listen_for_play_button(
 ) {
     for evt in events.iter() {
         if evt.name() == "pressed" {
-            app_state.push(AppState::InGame).unwrap();
+            app_state.push(AppState::Countdown).unwrap();
         }
     }
 }

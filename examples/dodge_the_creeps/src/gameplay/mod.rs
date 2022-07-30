@@ -1,7 +1,8 @@
-use crate::AppState;
-use bevy_godot::prelude::{bevy_prelude::SystemSet, *};
+use bevy_godot::prelude::*;
 
+pub mod countdown;
 pub mod enemy;
+pub mod gameover;
 pub mod player;
 pub mod score;
 
@@ -11,21 +12,7 @@ impl Plugin for GameplayPlugin {
         app.add_plugin(score::ScorePlugin)
             .add_plugin(enemy::EnemyPlugin)
             .add_plugin(player::PlayerPlugin)
-            .add_system_set(SystemSet::on_enter(AppState::InGame).with_system(play_bg_music));
+            .add_plugin(gameover::GameoverPlugin)
+            .add_plugin(countdown::CountdownPlugin);
     }
-}
-
-fn play_bg_music(mut entities: Query<(&Name, &mut ErasedGodotRef)>) {
-    let mut music = entities
-        .iter_mut()
-        .find_map(|(name, reference)| {
-            if name.as_str() == "Music" {
-                Some(reference)
-            } else {
-                None
-            }
-        })
-        .unwrap();
-
-    music.get::<AudioStreamPlayer>().play(0.0);
 }

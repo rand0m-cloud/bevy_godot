@@ -250,44 +250,42 @@ fn create_scene_tree_entity(
                     ent.insert(Transform2D::from(transform));
                 }
 
-                if let Some(physics_body) = node.try_get::<PhysicsBody>() {
-                    if physics_body.has_signal("body_entered") {
-                        debug!(target: "godot_scene_tree_collisions", body_id = physics_body.get_instance_id(), "has body_entered signal");
-                        physics_body
-                            .connect(
-                                "body_entered",
-                                collision_watcher,
-                                "collision_event",
-                                VariantArray::from_iter(&[
-                                    Variant::new(physics_body.claim()),
-                                    Variant::new(CollisionEventType::Started),
-                                ])
-                                .into_shared(),
-                                0,
-                            )
-                            .unwrap();
-                        physics_body
-                            .connect(
-                                "body_exited",
-                                collision_watcher,
-                                "collision_event",
-                                VariantArray::from_iter(&[
-                                    Variant::new(physics_body.claim()),
-                                    Variant::new(CollisionEventType::Ended),
-                                ])
-                                .into_shared(),
-                                0,
-                            )
-                            .unwrap();
+                let node = node.get::<Node>();
 
-                        ent.insert(Collisions::default());
-                    }
+                if node.has_signal("body_entered") {
+                    debug!(target: "godot_scene_tree_collisions", body_id = node.get_instance_id(), "has body_entered signal");
+                    node.connect(
+                        "body_entered",
+                        collision_watcher,
+                        "collision_event",
+                        VariantArray::from_iter(&[
+                            Variant::new(node.claim()),
+                            Variant::new(CollisionEventType::Started),
+                        ])
+                        .into_shared(),
+                        0,
+                    )
+                    .unwrap();
+                    node.connect(
+                        "body_exited",
+                        collision_watcher,
+                        "collision_event",
+                        VariantArray::from_iter(&[
+                            Variant::new(node.claim()),
+                            Variant::new(CollisionEventType::Ended),
+                        ])
+                        .into_shared(),
+                        0,
+                    )
+                    .unwrap();
+
+                    ent.insert(Collisions::default());
                 }
 
-                ent.insert(Groups::from(&*node.get::<Node>()));
+                ent.insert(Groups::from(&*node));
 
                 let ent = ent.id();
-                ent_mapping.insert(node.instance_id(), ent);
+                ent_mapping.insert(node.get_instance_id(), ent);
             }
             SceneTreeEventType::NodeRemoved => {
                 commands.entity(ent.unwrap()).despawn_recursive();

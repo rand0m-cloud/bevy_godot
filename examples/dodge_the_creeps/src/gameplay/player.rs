@@ -1,6 +1,6 @@
 use crate::AppState;
 use bevy_godot::prelude::{
-    bevy_prelude::{Local, SystemSet, With},
+    bevy_prelude::{Local, State, SystemSet, With},
     godot_prelude::Vector2,
     *,
 };
@@ -10,8 +10,13 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(spawn_player)
             .add_system(player_on_ready)
-            .add_system_set(SystemSet::on_update(AppState::InGame).with_system(move_player))
-            .add_system_set(SystemSet::on_enter(AppState::InGame).with_system(setup_player));
+            .add_system_set(
+                SystemSet::on_update(AppState::InGame)
+                    .with_system(move_player)
+                    .with_system(check_player_death),
+            )
+            .add_system_set(SystemSet::on_enter(AppState::Countdown).with_system(setup_player))
+            .add_system_set(SystemSet::on_update(AppState::Countdown).with_system(move_player));
     }
 }
 
@@ -116,4 +121,18 @@ fn setup_player(
             .unwrap()
     };
     transform.origin = start_position.position();
+}
+
+fn check_player_death(
+    mut player: Query<(&mut ErasedGodotRef, &Collisions), With<Player>>,
+    mut state: ResMut<State<AppState>>,
+) {
+    let (mut player_ref, collisions) = player.single_mut();
+
+    if collisions.colliding().is_empty() {
+        return;
+    }
+
+    player_ref.get::<Node2D>().set_visible(false);
+    state.set(AppState::GameOver).unwrap();
 }
