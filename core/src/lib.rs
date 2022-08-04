@@ -18,7 +18,7 @@ macro_rules! bevy_godot_init {
         #[derive(NativeClass, Default)]
         #[inherit(Node)]
         struct Autoload {
-            app: App,
+            app: Option<App>,
         }
 
         #[methods]
@@ -34,7 +34,14 @@ macro_rules! bevy_godot_init {
 
             #[export]
             fn _process(&mut self, _base: TRef<Node>, _delta: f32) {
-                self.app.update();
+                use std::panic::{catch_unwind, resume_unwind, AssertUnwindSafe};
+
+                if let Some(app) = self.app.as_mut() {
+                    if let Err(e) = catch_unwind(AssertUnwindSafe(|| app.update())) {
+                        self.app = None;
+                        resume_unwind(e);
+                    }
+                }
             }
         }
 
@@ -77,7 +84,7 @@ macro_rules! bevy_godot_init {
                 app.insert_non_send_resource(bevy_godot::prelude::CollisionEventReader(reciever));
             }
 
-            autoload.app = app;
+            autoload.app = Some(app);
         }
 
         #[derive(NativeClass, Default)]
