@@ -1,3 +1,3 @@
 [workspace]
-members = ["core", "examples/spawn_scene", "examples/scene_tree_test", "examples/physics_demo"]
+members = ["core", "examples/spawn_scene", "examples/scene_tree_test", "examples/physics_demo", "examples/assets_demo"]
 resolver = "2"
