@@ -1,4 +1,4 @@
-pub use crate::plugins::{core::*, packed_scene::*};
+pub use crate::plugins::{assets::GodotResource, core::*, packed_scene::*};
 
 pub mod bevy_prelude {
     pub use bevy::prelude::*;
@@ -9,9 +9,9 @@ pub mod godot_prelude {
 }
 
 pub use bevy_prelude::{
-    App, Children, Commands, Component, DespawnRecursiveExt, Entity, Name,
-    ParallelSystemDescriptorCoercion, Parent, Plugin, Query, Reflect, ReflectComponent, Res,
-    ResMut, Time, Timer, Transform as BevyTransform, Vec3,
+    AddAsset, App, AssetServer, Assets, Children, Commands, Component, DespawnRecursiveExt, Entity,
+    Handle, HandleUntyped, Name, ParallelSystemDescriptorCoercion, Parent, Plugin, Query, Reflect,
+    ReflectComponent, Res, ResMut, SystemSet, Time, Timer, Transform as BevyTransform, Vec3, World,
 };
 pub use godot_prelude::{
     api::*, godot_init, methods, GodotObject, InitHandle, NativeClass, Ref, TRef,
