@@ -49,6 +49,7 @@ macro_rules! bevy_godot_init {
             init.add_class::<Autoload>();
             init.add_class::<SceneTreeWatcher>();
             init.add_class::<CollisionWatcher>();
+            init.add_class::<signal_watcher::GodotSignalWatcher>();
             $init(&init);
         }
 
@@ -84,7 +85,20 @@ macro_rules! bevy_godot_init {
                 app.insert_non_send_resource(bevy_godot::prelude::CollisionEventReader(reciever));
             }
 
-            autoload.app = Some(app);
+            {
+                let (sender, reciever) = std::sync::mpsc::channel();
+                let signal_watcher = signal_watcher::GodotSignalWatcher::new_instance();
+                signal_watcher
+                    .map_mut(|script, base| script.notification_channel = Some(sender))
+                    .unwrap();
+                signal_watcher.base().set_name("GodotSignalWatcher");
+
+                base.add_child(signal_watcher.into_base().into_shared(), true);
+
+                app.insert_non_send_resource(bevy_godot::prelude::GodotSignalReader(reciever));
+            }
+
+        autoload.app = Some(app);
         }
 
         #[derive(NativeClass, Default)]
@@ -151,6 +165,75 @@ macro_rules! bevy_godot_init {
                         target: target.get_instance_id(),
                     })
                     .unwrap();
+            }
+        }
+
+        mod signal_watcher {
+            use bevy_godot::prelude::{godot_prelude::Variant, *, bevy_prelude::trace};
+
+            #[derive(NativeClass, Default)]
+            #[inherit(Node)]
+            pub struct GodotSignalWatcher {
+                pub notification_channel:
+                    Option<std::sync::mpsc::Sender<bevy_godot::prelude::GodotSignal>>,
+            }
+
+            #[methods]
+            impl GodotSignalWatcher {
+                fn new(_base: &Node) -> Self {
+                    Self::default()
+                }
+
+                #[allow(clippy::too_many_arguments)]
+                #[export]
+                fn event(
+                    &self,
+                    base: TRef<Node>,
+                    #[opt]
+                    arg_1: Option<Variant>,
+                    #[opt]
+                    arg_2: Option<Variant>,
+                    #[opt]
+                    arg_3: Option<Variant>,
+                    #[opt]
+                    arg_4: Option<Variant>,
+                    #[opt]
+                    arg_5: Option<Variant>,
+                    #[opt]
+                    arg_6: Option<Variant>,
+                    #[opt]
+                    arg_7: Option<Variant>,
+                    #[opt]
+                    arg_8: Option<Variant>,
+                    #[opt]
+                    arg_9: Option<Variant>,
+                ) {
+                    let args = vec![
+                        arg_1, arg_2, arg_3, arg_4, arg_5, arg_6, arg_7, arg_8, arg_9,
+                    ].into_iter().flatten().collect::<Vec<_>>();
+
+                    let signal_args = args
+                        .iter()
+                        .take_while(|arg| **arg != Variant::new(base))
+                        .cloned()
+                        .collect::<Vec<_>>();
+                    let origin = args[signal_args.len() + 1].clone();
+                    let signal_name = args[signal_args.len() + 2].clone();
+
+                    let signal_event = bevy_godot::prelude::GodotSignal::new(
+                        signal_name.try_to::<String>().unwrap(),
+                        unsafe { origin.try_to_object::<Object>().unwrap().assume_safe() },
+                        signal_args,
+                    );
+
+                    trace!(target: "godot_signal", signal = ?signal_event);
+
+                    self.notification_channel
+                        .as_ref()
+                        .unwrap()
+                        .send(signal_event)
+                        .unwrap();
+                }
             }
         }
 

@@ -1,0 +1,7 @@
+[gd_resource type="GDNativeLibrary" format=2]
+
+[resource]
+entry/Windows.64 = "res://../../../target/debug/dodge_the_creeps.dll"
+entry/X11.64 = "res://../../../target/debug/libdodge_the_creeps.so"
+dependency/Windows.64 = [  ]
+dependency/X11.64 = [  ]

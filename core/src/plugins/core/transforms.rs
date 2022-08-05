@@ -154,12 +154,36 @@ impl IntoGodotTransform for bevy::prelude::Transform {
     }
 }
 
+#[derive(Debug, Component, Clone, Copy)]
+pub struct Transform2D(pub gdnative::prelude::Transform2D);
+
+impl From<gdnative::prelude::Transform2D> for Transform2D {
+    fn from(transform: gdnative::prelude::Transform2D) -> Self {
+        Self(transform)
+    }
+}
+
+impl std::ops::Deref for Transform2D {
+    type Target = gdnative::prelude::Transform2D;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for Transform2D {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 pub struct GodotTransformsPlugin;
 
 impl Plugin for GodotTransformsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_to_stage(CoreStage::PostUpdate, post_update_godot_transforms)
-            .add_system_to_stage(CoreStage::PreUpdate, pre_update_godot_transforms);
+        app.add_system_to_stage(CoreStage::Last, post_update_godot_transforms)
+            .add_system_to_stage(CoreStage::PreUpdate, pre_update_godot_transforms)
+            .add_system_to_stage(CoreStage::Last, post_update_godot_transforms_2d)
+            .add_system_to_stage(CoreStage::PreUpdate, pre_update_godot_transforms_2d);
     }
 }
 
@@ -186,6 +210,43 @@ fn pre_update_godot_transforms(
         let godot_transform = reference.get::<Spatial>().transform();
         if *transform.as_godot() != godot_transform {
             *transform.as_godot_mut() = godot_transform;
+        }
+    }
+}
+
+fn post_update_godot_transforms_2d(
+    _scene_tree: SceneTreeRef,
+    mut entities: Query<
+        (&Transform2D, &mut ErasedGodotRef),
+        Or<(Added<Transform2D>, Changed<Transform2D>)>,
+    >,
+) {
+    for (transform, mut reference) in entities.iter_mut() {
+        let obj = reference.get::<Node2D>();
+
+        let mut obj_transform = GodotTransform2D::IDENTITY.translated(obj.position());
+        obj_transform.set_rotation(obj.rotation() as f32);
+        obj_transform.set_scale(obj.scale());
+
+        if obj_transform != **transform {
+            obj.set_transform(**transform);
+        }
+    }
+}
+
+fn pre_update_godot_transforms_2d(
+    _scene_tree: SceneTreeRef,
+    mut entities: Query<(&mut Transform2D, &mut ErasedGodotRef)>,
+) {
+    for (mut transform, mut reference) in entities.iter_mut() {
+        let obj = reference.get::<Node2D>();
+
+        let mut obj_transform = GodotTransform2D::IDENTITY.translated(obj.position());
+        obj_transform.set_rotation(obj.rotation() as f32);
+        obj_transform.set_scale(obj.scale());
+
+        if obj_transform != **transform {
+            **transform = obj_transform;
         }
     }
 }
