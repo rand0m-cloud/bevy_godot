@@ -4,13 +4,16 @@ pub mod godot_ref;
 pub use godot_ref::*;
 
 pub mod transforms;
-pub use transforms::{Transform, *};
+pub use transforms::{Transform, Transform2D, *};
 
 pub mod scene_tree;
 pub use scene_tree::*;
 
 pub mod collisions;
 pub use collisions::*;
+
+pub mod signals;
+pub use signals::*;
 
 pub struct GodotCorePlugin;
 
@@ -21,6 +24,7 @@ impl Plugin for GodotCorePlugin {
             .add_plugin(bevy::diagnostic::DiagnosticsPlugin)
             .add_plugin(GodotSceneTreePlugin)
             .add_plugin(GodotTransformsPlugin)
-            .add_plugin(GodotCollisionsPlugin);
+            .add_plugin(GodotCollisionsPlugin)
+            .add_plugin(GodotSignalsPlugin);
     }
 }
