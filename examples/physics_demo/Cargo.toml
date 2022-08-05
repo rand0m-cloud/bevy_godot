@@ -14,4 +14,4 @@ crate-type = ["cdylib"]
 [dependencies]
 gdnative = "0.10"
 bevy = {version = "0.7", default-features = false}
-bevy_godot = {path = "../../core"}
+bevy_godot = {path = "../.."}
