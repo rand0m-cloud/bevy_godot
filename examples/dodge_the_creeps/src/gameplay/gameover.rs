@@ -45,5 +45,5 @@ fn update_gameover_button_timer(
         .unwrap();
     main_menu.get::<Control>().set_visible(true);
 
-    state.set(AppState::MainMenu).unwrap();
+    state.pop().unwrap();
 }

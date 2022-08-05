@@ -1,8 +1,6 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://HUD.tscn" type="PackedScene" id=4]
-[ext_resource path="res://art/House In a Forest Loop.ogg" type="AudioStream" id=5]
-[ext_resource path="res://art/gameover.wav" type="AudioStream" id=6]
 
 [sub_resource type="Curve2D" id=1]
 _data = {
@@ -27,9 +25,3 @@ curve = SubResource( 1 )
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="HUD" parent="CanvasLayer" instance=ExtResource( 4 )]
-
-[node name="Music" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 5 )
-
-[node name="DeathSound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 6 )

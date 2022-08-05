@@ -858,6 +858,7 @@ name = "dodge_the_creeps"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_asset_loader",
  "bevy_godot",
  "fastrand",
  "gdnative",
