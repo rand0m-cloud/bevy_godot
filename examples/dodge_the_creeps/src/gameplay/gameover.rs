@@ -8,22 +8,22 @@ pub struct GameoverPlugin;
 impl Plugin for GameoverPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(
-            SystemSet::on_enter(AppState::GameOver).with_system(setup_gameover_button_timer),
+            SystemSet::on_enter(AppState::GameOver).with_system(setup_gameover_timer),
         )
         .add_system_set(
-            SystemSet::on_update(AppState::GameOver).with_system(update_gameover_button_timer),
+            SystemSet::on_update(AppState::GameOver).with_system(update_gameover_timer),
         );
     }
 }
 
-pub struct GameoverButtonTimer(Timer);
+pub struct GameoverTimer(Timer);
 
-fn setup_gameover_button_timer(mut commands: Commands) {
-    commands.insert_resource(GameoverButtonTimer(Timer::from_seconds(2.0, false)));
+fn setup_gameover_timer(mut commands: Commands) {
+    commands.insert_resource(GameoverTimer(Timer::from_seconds(2.0, false)));
 }
 
-fn update_gameover_button_timer(
-    mut timer: ResMut<GameoverButtonTimer>,
+fn update_gameover_timer(
+    mut timer: ResMut<GameoverTimer>,
     time: Res<Time>,
     mut entities: Query<(&Name, &mut ErasedGodotRef)>,
     mut state: ResMut<State<AppState>>,
