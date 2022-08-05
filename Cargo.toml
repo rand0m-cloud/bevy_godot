@@ -1,3 +1,16 @@
-[workspace]
-members = ["core", "examples/spawn_scene", "examples/scene_tree_test", "examples/physics_demo", "examples/assets_demo", "examples/dodge_the_creeps"]
-resolver = "2"
+[package]
+name = "bevy_godot"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+
+[features]
+default = []
+
+trace = ["bevy/trace"]
+trace_chrome = ["trace", "bevy/trace_chrome"]
+
+[dependencies]
+gdnative = "0.10"
+bevy = {version = "0.7", default-features = false}
+anyhow = "1.0.58"

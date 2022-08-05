@@ -1,0 +1,3 @@
+[workspace]
+members = ["assets_demo", "physics_demo", "scene_tree_test", "spawn_scene", "dodge_the_creeps"]
+resolver = "2"
