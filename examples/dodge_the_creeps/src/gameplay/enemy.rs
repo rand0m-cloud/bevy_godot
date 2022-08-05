@@ -94,14 +94,10 @@ fn new_mob(
         let mob_type_index = fastrand::i32(0..mob_types.len());
         animated_sprite.set_animation(mob_types.get(mob_type_index));
 
-        let visibility_notifier = unsafe {
-            mob.get_node("VisibilityNotifier2D")
-                .unwrap()
-                .assume_unique()
-        };
+        let visibility_notifier = mob.get_node("VisibilityNotifier2D").unwrap();
 
         connect_godot_signal(
-            &mut unsafe { ErasedGodotRef::new(visibility_notifier) },
+            &mut unsafe { ErasedGodotRef::new(visibility_notifier.assume_unique()) },
             "screen_exited",
             &mut scene_tree,
         );
