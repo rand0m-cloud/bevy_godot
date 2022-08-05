@@ -9,6 +9,7 @@ fn init(_handle: &InitHandle) {}
 fn build_app(app: &mut App) {
     AssetLoader::new(AppState::Loading)
         .with_collection::<music::MusicAssets>()
+        .with_collection::<main_menu::MenuAssets>()
         .continue_to_state(AppState::MainMenu)
         .build(app);
 

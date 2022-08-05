@@ -1,3 +1,4 @@
+use crate::main_menu::MenuAssets;
 use crate::AppState;
 use bevy_godot::prelude::{
     bevy_prelude::{State, SystemSet},
@@ -18,18 +19,38 @@ impl Plugin for CountdownPlugin {
 
 pub struct CountdownTimer(Timer);
 
-fn setup_countdown(mut commands: Commands) {
+fn setup_countdown(
+    mut commands: Commands,
+
+    menu_assets: Res<MenuAssets>,
+    mut assets: ResMut<Assets<ErasedGodotRef>>,
+) {
     commands.insert_resource(CountdownTimer(Timer::from_seconds(1.0, false)));
+
+    assets
+        .get_mut(&menu_assets.menu_label)
+        .unwrap()
+        .get::<Label>()
+        .set_text("Get Ready");
 }
 
 fn update_countdown(
     mut timer: ResMut<CountdownTimer>,
     time: Res<Time>,
     mut state: ResMut<State<AppState>>,
+
+    menu_assets: Res<MenuAssets>,
+    mut assets: ResMut<Assets<ErasedGodotRef>>,
 ) {
     timer.0.tick(time.delta());
     if timer.0.just_finished() {
         state.set(AppState::InGame).unwrap();
+
+        assets
+            .get_mut(&menu_assets.menu_label)
+            .unwrap()
+            .get::<Label>()
+            .set_text("");
     }
 }
 

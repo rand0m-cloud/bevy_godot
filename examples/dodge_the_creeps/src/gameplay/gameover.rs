@@ -1,3 +1,4 @@
+use crate::main_menu::MenuAssets;
 use crate::AppState;
 use bevy_godot::prelude::{
     bevy_prelude::{State, SystemSet},
@@ -7,43 +8,48 @@ use bevy_godot::prelude::{
 pub struct GameoverPlugin;
 impl Plugin for GameoverPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(
-            SystemSet::on_enter(AppState::GameOver).with_system(setup_gameover_timer),
-        )
-        .add_system_set(
-            SystemSet::on_update(AppState::GameOver).with_system(update_gameover_timer),
-        );
+        app.add_system_set(SystemSet::on_enter(AppState::GameOver).with_system(setup_gameover))
+            .add_system_set(
+                SystemSet::on_update(AppState::GameOver).with_system(update_gameover_timer),
+            );
     }
 }
 
 pub struct GameoverTimer(Timer);
 
-fn setup_gameover_timer(mut commands: Commands) {
+fn setup_gameover(
+    mut commands: Commands,
+
+    menu_assets: Res<MenuAssets>,
+    mut assets: ResMut<Assets<ErasedGodotRef>>,
+) {
     commands.insert_resource(GameoverTimer(Timer::from_seconds(2.0, false)));
+
+    assets
+        .get_mut(&menu_assets.menu_label)
+        .unwrap()
+        .get::<Label>()
+        .set_text("Game Over");
 }
 
 fn update_gameover_timer(
     mut timer: ResMut<GameoverTimer>,
     time: Res<Time>,
-    mut entities: Query<(&Name, &mut ErasedGodotRef)>,
     mut state: ResMut<State<AppState>>,
+
+    menu_assets: Res<MenuAssets>,
+    mut assets: ResMut<Assets<ErasedGodotRef>>,
 ) {
     timer.0.tick(time.delta());
     if !timer.0.just_finished() {
         return;
     }
 
-    let mut main_menu = entities
-        .iter_mut()
-        .find_map(|(name, reference)| {
-            if name.as_str() == "MainMenu" {
-                Some(reference)
-            } else {
-                None
-            }
-        })
-        .unwrap();
-    main_menu.get::<Control>().set_visible(true);
-
     state.pop().unwrap();
+
+    assets
+        .get_mut(&menu_assets.menu_label)
+        .unwrap()
+        .get::<Label>()
+        .set_text("Dodge the\nCreeps");
 }
