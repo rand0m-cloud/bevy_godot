@@ -1,4 +1,4 @@
-use crate::AppState;
+use crate::GameState;
 use bevy_asset_loader::*;
 use bevy_godot::prelude::{
     bevy_prelude::{EventReader, State, SystemSet},
@@ -18,15 +18,15 @@ pub struct MainMenuPlugin;
 impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(
-            SystemSet::on_exit(AppState::Loading)
+            SystemSet::on_exit(GameState::Loading)
                 .with_system(init_menu_assets)
                 .with_system(connect_play_button.after(init_menu_assets)),
         )
         .add_system_set(
-            SystemSet::on_update(AppState::MainMenu).with_system(listen_for_play_button),
+            SystemSet::on_update(GameState::MainMenu).with_system(listen_for_play_button),
         )
-        .add_system_set(SystemSet::on_pause(AppState::MainMenu).with_system(hide_play_button))
-        .add_system_set(SystemSet::on_resume(AppState::MainMenu).with_system(show_play_button));
+        .add_system_set(SystemSet::on_pause(GameState::MainMenu).with_system(hide_play_button))
+        .add_system_set(SystemSet::on_resume(GameState::MainMenu).with_system(show_play_button));
     }
 }
 
@@ -67,11 +67,11 @@ fn connect_play_button(
 
 fn listen_for_play_button(
     mut events: EventReader<GodotSignal>,
-    mut app_state: ResMut<State<AppState>>,
+    mut app_state: ResMut<State<GameState>>,
 ) {
     for evt in events.iter() {
         if evt.name() == "pressed" {
-            app_state.push(AppState::Countdown).unwrap();
+            app_state.push(GameState::Countdown).unwrap();
         }
     }
 }

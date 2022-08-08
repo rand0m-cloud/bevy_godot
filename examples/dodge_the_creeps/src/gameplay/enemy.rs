@@ -1,4 +1,4 @@
-use crate::AppState;
+use crate::GameState;
 use bevy_godot::prelude::{
     bevy_prelude::{Added, EventReader, SystemSet},
     godot_prelude::Vector2,
@@ -10,7 +10,7 @@ pub struct EnemyPlugin;
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(
-            SystemSet::on_update(AppState::InGame)
+            SystemSet::on_update(GameState::InGame)
                 .with_system(spawn_mob)
                 .with_system(new_mob)
                 .with_system(kill_mob),

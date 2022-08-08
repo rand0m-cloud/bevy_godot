@@ -1,4 +1,4 @@
-use crate::AppState;
+use crate::GameState;
 use bevy_asset_loader::*;
 use bevy_godot::prelude::{bevy_prelude::SystemSet, *};
 
@@ -20,10 +20,10 @@ pub struct MusicAssets {
 pub struct MusicPlugin;
 impl Plugin for MusicPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(AppState::MainMenu).with_system(init_assets))
-            .add_system_set(SystemSet::on_enter(AppState::Countdown).with_system(play_bg_music))
+        app.add_system_set(SystemSet::on_enter(GameState::MainMenu).with_system(init_assets))
+            .add_system_set(SystemSet::on_enter(GameState::Countdown).with_system(play_bg_music))
             .add_system_set(
-                SystemSet::on_enter(AppState::GameOver)
+                SystemSet::on_enter(GameState::GameOver)
                     .with_system(stop_bg_music)
                     .with_system(play_death_sfx),
             );

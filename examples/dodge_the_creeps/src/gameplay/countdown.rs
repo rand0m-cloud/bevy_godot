@@ -1,5 +1,5 @@
 use crate::main_menu::MenuAssets;
-use crate::AppState;
+use crate::GameState;
 use bevy_godot::prelude::{
     bevy_prelude::{State, SystemSet},
     *,
@@ -9,11 +9,11 @@ pub struct CountdownPlugin;
 impl Plugin for CountdownPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(
-            SystemSet::on_enter(AppState::Countdown)
+            SystemSet::on_enter(GameState::Countdown)
                 .with_system(setup_countdown)
                 .with_system(kill_all_mobs),
         )
-        .add_system_set(SystemSet::on_update(AppState::Countdown).with_system(update_countdown));
+        .add_system_set(SystemSet::on_update(GameState::Countdown).with_system(update_countdown));
     }
 }
 
@@ -37,14 +37,14 @@ fn setup_countdown(
 fn update_countdown(
     mut timer: ResMut<CountdownTimer>,
     time: Res<Time>,
-    mut state: ResMut<State<AppState>>,
+    mut state: ResMut<State<GameState>>,
 
     menu_assets: Res<MenuAssets>,
     mut assets: ResMut<Assets<ErasedGodotRef>>,
 ) {
     timer.0.tick(time.delta());
     if timer.0.just_finished() {
-        state.set(AppState::InGame).unwrap();
+        state.set(GameState::InGame).unwrap();
 
         assets
             .get_mut(&menu_assets.menu_label)
