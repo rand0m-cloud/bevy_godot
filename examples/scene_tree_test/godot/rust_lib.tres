@@ -1,7 +1,7 @@
 [gd_resource type="GDNativeLibrary" format=2]
 
 [resource]
-entry/Windows.64 = "res://../../../target/debug/scene_tree_test.dll"
-entry/X11.64 = "res://../../../target/debug/libscene_tree_test.so"
+entry/Windows.64 = "res://../../target/debug/scene_tree_test.dll"
+entry/X11.64 = "res://../../target/debug/libscene_tree_test.so"
 dependency/Windows.64 = [  ]
 dependency/X11.64 = [  ]
