@@ -14,17 +14,26 @@ impl Plugin for PackedScenePlugin {
     }
 }
 
-#[derive(Component, Debug, Reflect, Default)]
+#[derive(Component, Debug, Reflect, Clone)]
 #[reflect(Component)]
-pub struct GodotScene {
-    path: String,
+pub enum GodotScene {
+    ResourcePath(String),
+    ResourceHandle(Handle<GodotResource>),
+}
+
+impl Default for GodotScene {
+    fn default() -> Self {
+        Self::from_path("")
+    }
 }
 
 impl GodotScene {
     pub fn from_path(path: &str) -> Self {
-        Self {
-            path: path.to_string(),
-        }
+        Self::ResourcePath(path.to_string())
+    }
+
+    pub fn from_handle(handle: &Handle<GodotResource>) -> Self {
+        Self::ResourceHandle(handle.clone())
     }
 }
 
@@ -36,17 +45,25 @@ fn spawn_scene(
     mut commands: Commands,
     mut scene_tree: SceneTreeRef,
     new_scenes: Query<(&GodotScene, Entity), Without<GodotSceneSpawned>>,
+    mut assets: ResMut<Assets<GodotResource>>,
 ) {
     for (scene, ent) in new_scenes.iter() {
         let resource_loader = ResourceLoader::godot_singleton();
-        let packed_scene = resource_loader
-            .load(scene.path.clone(), "PackedScene", false)
-            .expect("packed scene to load");
+        let packed_scene = match scene {
+            GodotScene::ResourcePath(path) => resource_loader
+                .load(path, "PackedScene", false)
+                .expect("packed scene to load"),
+            GodotScene::ResourceHandle(handle) => assets
+                .get_mut(handle)
+                .expect("packed scene to exist in assets")
+                .0
+                .clone(),
+        };
 
         let instance = unsafe {
             packed_scene
                 .cast::<PackedScene>()
-                .unwrap()
+                .expect("resource to be a packed scene")
                 .assume_safe()
                 .instance(GenEditState::DISABLED.0)
                 .unwrap()

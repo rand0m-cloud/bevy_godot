@@ -28,39 +28,17 @@ struct GameAssets {
 }
 
 fn spawn_cube_asset(
+    mut commands: Commands,
     game_assets: Res<GameAssets>,
-    mut assets: ResMut<Assets<GodotResource>>,
-    mut scene_tree: SceneTreeRef,
     entities: Query<(&Name, &Transform)>,
 ) {
-    let player_scn = assets.get_mut(&game_assets.player).unwrap();
-    let player = player_scn
-        .get::<PackedScene>()
-        .unwrap()
-        .instance(0)
-        .unwrap();
-
     let spawn_location = entities
         .iter()
-        .find_map(|(name, transform)| {
-            if name.as_str() == "SpawnPosition" {
-                Some(*transform)
-            } else {
-                None
-            }
-        })
+        .find_map(|(name, transform)| (name.as_str() == "SpawnPosition").then(|| *transform))
         .unwrap();
 
-    unsafe {
-        player
-            .assume_unique()
-            .cast::<Spatial>()
-            .unwrap()
-            .set_transform(*spawn_location.as_godot());
-    }
-
-    unsafe {
-        let current_scene = scene_tree.get().current_scene().unwrap();
-        current_scene.assume_safe().add_child(player, true);
-    };
+    commands
+        .spawn()
+        .insert(spawn_location)
+        .insert(GodotScene::from_handle(&game_assets.player));
 }
