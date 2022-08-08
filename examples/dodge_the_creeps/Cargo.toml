@@ -13,7 +13,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 gdnative = "0.10"
-bevy = {version = "0.7", default-features = false}
+bevy = {version = "0.8", default-features = false}
 bevy_godot = {path = "../.."}
 fastrand = "1.8.0"
-bevy_asset_loader = "0.11.0"
+bevy_asset_loader = "0.12.0"

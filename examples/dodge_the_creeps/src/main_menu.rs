@@ -1,7 +1,7 @@
 use crate::GameState;
-use bevy_asset_loader::*;
+use bevy_asset_loader::prelude::*;
 use bevy_godot::prelude::{
-    bevy_prelude::{EventReader, State, SystemSet},
+    bevy_prelude::{EventReader, Mut, State, SystemSet},
     *,
 };
 

@@ -3,10 +3,13 @@ pub use crate::plugins::{assets::GodotResource, core::*, packed_scene::*};
 pub mod bevy_prelude {
     pub use bevy::prelude::*;
 }
+pub use bevy;
+
 pub mod godot_prelude {
     pub use gdnative::api;
     pub use gdnative::prelude::*;
 }
+pub use gdnative;
 
 pub use bevy_prelude::{
     AddAsset, App, AssetServer, Assets, Children, Commands, Component, DespawnRecursiveExt, Entity,

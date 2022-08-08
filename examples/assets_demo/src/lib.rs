@@ -1,15 +1,15 @@
-use bevy_asset_loader::*;
-use bevy_godot::prelude::*;
+use bevy_asset_loader::prelude::*;
+use bevy_godot::prelude::{bevy_prelude::Mut, *};
 
 fn init(_handle: &InitHandle) {}
 
 fn build_app(app: &mut App) {
-    AssetLoader::new(GameState::Loading)
-        .with_collection::<GameAssets>()
-        .continue_to_state(GameState::Playing)
-        .build(app);
-
     app.add_state(GameState::Loading)
+        .add_loading_state(
+            LoadingState::new(GameState::Loading)
+                .with_collection::<GameAssets>()
+                .continue_to_state(GameState::Playing),
+        )
         .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_cube_asset));
 }
 

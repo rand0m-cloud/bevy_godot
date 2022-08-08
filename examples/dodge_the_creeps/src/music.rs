@@ -1,7 +1,9 @@
 use crate::GameState;
-use bevy_asset_loader::*;
-use bevy_godot::prelude::{bevy_prelude::SystemSet, *};
-
+use bevy_asset_loader::prelude::*;
+use bevy_godot::prelude::{
+    bevy_prelude::{Mut, SystemSet},
+    *,
+};
 #[derive(AssetCollection, Debug)]
 pub struct MusicAssets {
     #[asset(path = "art/House In a Forest Loop.res")]

@@ -22,6 +22,8 @@ impl Plugin for GodotCorePlugin {
         app.add_plugin(bevy::core::CorePlugin)
             .add_plugin(bevy::log::LogPlugin)
             .add_plugin(bevy::diagnostic::DiagnosticsPlugin)
+            .add_plugin(bevy::time::TimePlugin)
+            .add_plugin(bevy::hierarchy::HierarchyPlugin)
             .add_plugin(GodotSceneTreePlugin)
             .add_plugin(GodotTransformsPlugin)
             .add_plugin(GodotCollisionsPlugin)
