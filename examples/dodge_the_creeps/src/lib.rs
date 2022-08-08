@@ -1,4 +1,4 @@
-use bevy_asset_loader::*;
+use bevy_asset_loader::prelude::*;
 use bevy_godot::prelude::*;
 pub mod gameplay;
 pub mod main_menu;
@@ -7,15 +7,15 @@ pub mod music;
 fn init(_handle: &InitHandle) {}
 
 fn build_app(app: &mut App) {
-    AssetLoader::new(GameState::Loading)
-        .with_collection::<music::MusicAssets>()
-        .with_collection::<main_menu::MenuAssets>()
-        .with_collection::<gameplay::enemy::EnemyAssets>()
-        .with_collection::<gameplay::player::PlayerAssets>()
-        .continue_to_state(GameState::MainMenu)
-        .build(app);
-
     app.add_state(GameState::Loading)
+        .add_loading_state(
+            LoadingState::new(GameState::Loading)
+                .continue_to_state(GameState::MainMenu)
+                .with_collection::<music::MusicAssets>()
+                .with_collection::<main_menu::MenuAssets>()
+                .with_collection::<gameplay::enemy::EnemyAssets>()
+                .with_collection::<gameplay::player::PlayerAssets>(),
+        )
         .init_resource::<Score>()
         .add_plugin(main_menu::MainMenuPlugin)
         .add_plugin(gameplay::GameplayPlugin)

@@ -77,7 +77,6 @@ fn spawn_scene(
         commands
             .entity(ent)
             .insert(unsafe { ErasedGodotRef::new(instance.assume_unique()) })
-            .insert(Children::default())
             .insert(GodotSceneSpawned);
     }
 }

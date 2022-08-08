@@ -1,7 +1,7 @@
 use crate::GameState;
-use bevy_asset_loader::*;
+use bevy_asset_loader::prelude::*;
 use bevy_godot::prelude::{
-    bevy_prelude::{Added, State, SystemSet, With, Without},
+    bevy_prelude::{Added, Mut, State, SystemSet, With, Without},
     godot_prelude::Vector2,
     *,
 };

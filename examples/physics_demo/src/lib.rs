@@ -1,6 +1,5 @@
 #![allow(clippy::type_complexity)]
 
-use bevy::core::Timer;
 use bevy_godot::prelude::*;
 
 fn init(_handle: &InitHandle) {}

@@ -1,6 +1,5 @@
 #![allow(clippy::type_complexity)]
 
-use bevy::core::Timer;
 use bevy_godot::prelude::*;
 use gdnative::api::CSGBox;
 
@@ -53,8 +52,7 @@ fn spawn_cube(
                 10.0 * time.seconds_since_startup().sin() as f32,
                 5.0 * time.seconds_since_startup().sin() as f32,
                 -8.0 + -1.0 * time.seconds_since_startup() as f32,
-            ))))
-            .insert(Children::default());
+            ))));
     }
 }
 

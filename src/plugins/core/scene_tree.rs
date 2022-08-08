@@ -1,5 +1,5 @@
 use crate::prelude::{
-    bevy_prelude::{debug, trace, CoreStage, EventReader, EventWriter, NonSendMut},
+    bevy_prelude::{debug, trace, BuildChildren, CoreStage, EventReader, EventWriter, NonSendMut},
     godot_prelude::{FromVariant, SubClass, ToVariant, Variant, VariantArray},
     *,
 };
@@ -223,19 +223,7 @@ fn create_scene_tree_entity(
                 };
 
                 ent.insert(ErasedGodotRef::clone(&node))
-                    .insert(Name::from(node.get::<Node>().name().to_string()))
-                    .insert(Children::default());
-
-                if node.instance_id() != scene_root.get_instance_id() {
-                    let parent = unsafe {
-                        node.get::<Node>()
-                            .get_parent()
-                            .unwrap()
-                            .assume_safe()
-                            .get_instance_id()
-                    };
-                    ent.insert(Parent(*ent_mapping.get(&parent).unwrap()));
-                }
+                    .insert(Name::from(node.get::<Node>().name().to_string()));
 
                 if let Some(spatial) = node.try_get::<Spatial>() {
                     ent.insert(Transform::from(spatial.transform().to_bevy_transform()));
@@ -286,6 +274,14 @@ fn create_scene_tree_entity(
 
                 let ent = ent.id();
                 ent_mapping.insert(node.get_instance_id(), ent);
+
+                if node.get_instance_id() != scene_root.get_instance_id() {
+                    let parent =
+                        unsafe { node.get_parent().unwrap().assume_safe().get_instance_id() };
+                    commands
+                        .entity(*ent_mapping.get(&parent).unwrap())
+                        .push_children(&[ent]);
+                }
             }
             SceneTreeEventType::NodeRemoved => {
                 commands.entity(ent.unwrap()).despawn_recursive();
