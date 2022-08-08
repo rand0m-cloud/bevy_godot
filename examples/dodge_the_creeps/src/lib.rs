@@ -10,6 +10,8 @@ fn build_app(app: &mut App) {
     AssetLoader::new(GameState::Loading)
         .with_collection::<music::MusicAssets>()
         .with_collection::<main_menu::MenuAssets>()
+        .with_collection::<gameplay::enemy::EnemyAssets>()
+        .with_collection::<gameplay::player::PlayerAssets>()
         .continue_to_state(GameState::MainMenu)
         .build(app);
 
