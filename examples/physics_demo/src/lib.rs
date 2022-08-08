@@ -17,7 +17,6 @@ pub struct PrintEntitiesTimer(pub Timer);
 
 fn print_ball_positions(
     entities: Query<(&Name, &Groups, &Transform)>,
-    _scene_tree: SceneTreeRef,
     time: Res<Time>,
     mut print_timer: ResMut<PrintEntitiesTimer>,
 ) {

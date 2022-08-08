@@ -58,11 +58,7 @@ fn spawn_cube(
     }
 }
 
-fn cube_lifetime(
-    mut cubes: Query<(&mut Cube, &mut ErasedGodotRef)>,
-    _scene_tree: SceneTreeRef,
-    time: Res<Time>,
-) {
+fn cube_lifetime(mut cubes: Query<(&mut Cube, &mut ErasedGodotRef)>, time: Res<Time>) {
     for (mut cube, mut reference) in cubes.iter_mut() {
         cube.lifetime.tick(time.delta());
         if cube.lifetime.finished() {
@@ -79,7 +75,6 @@ fn print_entities(
         Option<&Children>,
         Option<&Parent>,
     )>,
-    _scene_tree: SceneTreeRef,
     time: Res<Time>,
     mut print_timer: ResMut<PrintEntitiesTimer>,
 ) {

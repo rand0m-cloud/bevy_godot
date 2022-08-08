@@ -34,7 +34,7 @@ fn spawn_cube_asset(
 ) {
     let spawn_location = entities
         .iter()
-        .find_map(|(name, transform)| (name.as_str() == "SpawnPosition").then(|| *transform))
+        .find_map(|(name, transform)| (name.as_str() == "SpawnPosition").then_some(*transform))
         .unwrap();
 
     commands
