@@ -1,14 +1,21 @@
 use crate::GameState;
+use bevy_asset_loader::*;
 use bevy_godot::prelude::{
-    bevy_prelude::{Local, State, SystemSet, With},
+    bevy_prelude::{Added, State, SystemSet, With, Without},
     godot_prelude::Vector2,
     *,
 };
 
+#[derive(AssetCollection, Debug)]
+pub struct PlayerAssets {
+    #[asset(path = "Player.tscn")]
+    player_scn: Handle<GodotResource>,
+}
+
 pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(spawn_player)
+        app.add_system_set(SystemSet::on_exit(GameState::Loading).with_system(spawn_player))
             .add_system(player_on_ready)
             .add_system_set(
                 SystemSet::on_update(GameState::InGame)
@@ -25,22 +32,17 @@ pub struct Player {
     speed: f64,
 }
 
-fn spawn_player(mut commands: Commands) {
+fn spawn_player(mut commands: Commands, assets: Res<PlayerAssets>) {
     commands
         .spawn()
-        .insert(GodotScene::from_path("res://Player.tscn"))
+        .insert(GodotScene::from_handle(&assets.player_scn))
         .insert(Player { speed: 400.0 });
 }
 
 fn player_on_ready(
-    mut player: Query<&mut ErasedGodotRef, With<Player>>,
-    mut complete: Local<bool>,
+    mut player: Query<&mut ErasedGodotRef, Added<Player>>,
     _scene_tree: SceneTreeRef,
 ) {
-    if *complete {
-        return;
-    }
-
     if let Ok(mut player) = player.get_single_mut() {
         let player = player.get::<Node2D>();
 
@@ -55,8 +57,6 @@ fn player_on_ready(
                 .unwrap()
         };
         player.set_position(start_position.position());
-
-        *complete = true;
     }
 }
 
@@ -105,22 +105,20 @@ fn move_player(
 
 fn setup_player(
     mut player: Query<(&mut ErasedGodotRef, &mut Transform2D), With<Player>>,
-    _scene_tree: SceneTreeRef,
+    mut entities: Query<(&Name, &mut ErasedGodotRef), Without<Player>>,
 ) {
     let (mut player, mut transform) = player.single_mut();
     let player = player.get::<Node2D>();
 
     player.set_visible(true);
 
-    let start_position = unsafe {
-        player
-            .get_node("/root/Main/StartPosition")
-            .unwrap()
-            .assume_safe()
-            .cast::<Node2D>()
-            .unwrap()
-    };
-    transform.origin = start_position.position();
+    let start_position = entities
+        .iter_mut()
+        .find_map(|(name, reference)| (name.as_str() == "StartPosition").then_some(reference))
+        .unwrap()
+        .get::<Node2D>()
+        .position();
+    transform.origin = start_position;
 }
 
 fn check_player_death(

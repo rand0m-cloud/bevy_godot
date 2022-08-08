@@ -60,9 +60,8 @@ fn connect_play_button(
     mut assets: ResMut<Assets<ErasedGodotRef>>,
     mut scene_tree: SceneTreeRef,
 ) {
-    let mut play_button = assets.get_mut(&menu_assets.play_button).unwrap();
-
-    connect_godot_signal(&mut play_button, "pressed", &mut scene_tree);
+    let play_button = assets.get_mut(&menu_assets.play_button).unwrap();
+    connect_godot_signal(play_button, "pressed", &mut scene_tree);
 }
 
 fn listen_for_play_button(

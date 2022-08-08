@@ -1,10 +1,17 @@
 use crate::GameState;
+use bevy_asset_loader::*;
 use bevy_godot::prelude::{
     bevy_prelude::{Added, EventReader, SystemSet},
     godot_prelude::Vector2,
     *,
 };
 use std::f64::consts::PI;
+
+#[derive(AssetCollection, Debug)]
+pub struct EnemyAssets {
+    #[asset(path = "Mob.tscn")]
+    mob_scn: Handle<GodotResource>,
+}
 
 pub struct EnemyPlugin;
 impl Plugin for EnemyPlugin {
@@ -30,29 +37,26 @@ fn spawn_mob(
     mut commands: Commands,
     time: Res<Time>,
     mut timer: ResMut<MobSpawnTimer>,
-    mut scene_tree: SceneTreeRef,
+    mut entities: Query<(&Name, &mut ErasedGodotRef)>,
+    assets: Res<EnemyAssets>,
 ) {
     timer.0.tick(time.delta());
     if !timer.0.just_finished() {
         return;
     }
 
-    let scene_root = scene_tree.get().root().unwrap();
-    let mob_spawn_location = unsafe {
-        scene_root
-            .assume_safe()
-            .get_node("Main/MobPath/MobSpawnLocation")
-            .unwrap()
-            .assume_safe()
-            .cast::<PathFollow2D>()
-            .unwrap()
-    };
-    mob_spawn_location.set_offset(fastrand::i32(..) as f64);
+    let mut mob_spawn_path_follow = entities
+        .iter_mut()
+        .find_map(|(name, reference)| (name.as_str() == "MobSpawnLocation").then_some(reference))
+        .unwrap();
+    let mob_spawn_path_follow = mob_spawn_path_follow.get::<PathFollow2D>();
 
-    let mut direction = mob_spawn_location.rotation() + PI / 2.0;
+    mob_spawn_path_follow.set_offset(fastrand::i32(..) as f64);
+
+    let mut direction = mob_spawn_path_follow.rotation() + PI / 2.0;
     direction += fastrand::f64() * PI / 2.0 - PI / 4.0;
 
-    let position = mob_spawn_location.position();
+    let position = mob_spawn_path_follow.position();
 
     let mut transform = GodotTransform2D::IDENTITY.translated(position);
     transform.set_rotation(direction as f32);
@@ -61,7 +65,7 @@ fn spawn_mob(
         .spawn()
         .insert(Mob { direction })
         .insert(Transform2D::from(transform))
-        .insert(GodotScene::from_path("res://Mob.tscn"));
+        .insert(GodotScene::from_handle(&assets.mob_scn));
 }
 
 fn new_mob(
