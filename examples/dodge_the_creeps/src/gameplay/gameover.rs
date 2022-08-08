@@ -1,5 +1,5 @@
 use crate::main_menu::MenuAssets;
-use crate::AppState;
+use crate::GameState;
 use bevy_godot::prelude::{
     bevy_prelude::{State, SystemSet},
     *,
@@ -8,9 +8,9 @@ use bevy_godot::prelude::{
 pub struct GameoverPlugin;
 impl Plugin for GameoverPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(AppState::GameOver).with_system(setup_gameover))
+        app.add_system_set(SystemSet::on_enter(GameState::GameOver).with_system(setup_gameover))
             .add_system_set(
-                SystemSet::on_update(AppState::GameOver).with_system(update_gameover_timer),
+                SystemSet::on_update(GameState::GameOver).with_system(update_gameover_timer),
             );
     }
 }
@@ -35,7 +35,7 @@ fn setup_gameover(
 fn update_gameover_timer(
     mut timer: ResMut<GameoverTimer>,
     time: Res<Time>,
-    mut state: ResMut<State<AppState>>,
+    mut state: ResMut<State<GameState>>,
 
     menu_assets: Res<MenuAssets>,
     mut assets: ResMut<Assets<ErasedGodotRef>>,

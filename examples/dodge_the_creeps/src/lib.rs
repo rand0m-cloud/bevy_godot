@@ -7,13 +7,13 @@ pub mod music;
 fn init(_handle: &InitHandle) {}
 
 fn build_app(app: &mut App) {
-    AssetLoader::new(AppState::Loading)
+    AssetLoader::new(GameState::Loading)
         .with_collection::<music::MusicAssets>()
         .with_collection::<main_menu::MenuAssets>()
-        .continue_to_state(AppState::MainMenu)
+        .continue_to_state(GameState::MainMenu)
         .build(app);
 
-    app.add_state(AppState::Loading)
+    app.add_state(GameState::Loading)
         .init_resource::<Score>()
         .add_plugin(main_menu::MainMenuPlugin)
         .add_plugin(gameplay::GameplayPlugin)
@@ -23,7 +23,7 @@ fn build_app(app: &mut App) {
 bevy_godot_init!(init, build_app);
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
-enum AppState {
+enum GameState {
     Loading,
     MainMenu,
     Countdown,
