@@ -319,6 +319,7 @@ dependencies = [
  "anyhow",
  "bevy",
  "gdnative",
+ "lazy_static",
 ]
 
 [[package]]
