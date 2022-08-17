@@ -15,3 +15,4 @@ gdnative = "0.10"
 bevy = {version = "0.8", default-features = false, features = ["bevy_asset"]}
 anyhow = "1.0.58"
 lazy_static = "1.4.0"
+iyes_loopless = "0.7"
