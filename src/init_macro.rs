@@ -72,12 +72,34 @@ impl Autoload {
         use std::panic::{catch_unwind, resume_unwind, AssertUnwindSafe};
 
         if let Some(app) = self.app.as_mut() {
+            app.insert_resource(GodotFrame);
+
             if let Err(e) = catch_unwind(AssertUnwindSafe(|| app.update())) {
                 self.app = None;
 
                 eprintln!("bevy app update panicked");
                 resume_unwind(e);
             }
+
+            app.world.remove_resource::<GodotFrame>();
+        }
+    }
+
+    #[export]
+    fn _physics_process(&mut self, _base: TRef<Node>, _delta: f32) {
+        use std::panic::{catch_unwind, resume_unwind, AssertUnwindSafe};
+
+        if let Some(app) = self.app.as_mut() {
+            app.insert_resource(GodotPhysicsFrame);
+
+            if let Err(e) = catch_unwind(AssertUnwindSafe(|| app.update())) {
+                self.app = None;
+
+                eprintln!("bevy app update panicked");
+                resume_unwind(e);
+            }
+
+            app.world.remove_resource::<GodotPhysicsFrame>();
         }
     }
 }

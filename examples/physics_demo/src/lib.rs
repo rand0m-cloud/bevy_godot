@@ -6,7 +6,7 @@ fn init(_handle: &InitHandle) {}
 
 fn build_app(app: &mut App) {
     app.add_system(print_ball_positions)
-        .add_system(print_ball_collisions)
+        .add_system(print_ball_collisions.as_physics_system())
         .insert_resource(PrintEntitiesTimer(Timer::from_seconds(0.5, true)));
 }
 
