@@ -43,6 +43,7 @@ pub struct GodotFrame;
 /// Bevy resource that is available when the app is updated through `_physics_process` callback
 pub struct GodotPhysicsFrame;
 
+/// Adds `as_physics_system` that schedules a system only for the physics frame
 pub trait AsPhysicsSystem<Params> {
     fn as_physics_system(self) -> ConditionalSystemDescriptor;
 }
@@ -53,6 +54,7 @@ impl<Params, T: IntoSystem<(), (), Params>> AsPhysicsSystem<Params> for T {
     }
 }
 
+/// Adds `as_visual_system` that schedules a system only for the frame
 pub trait AsVisualSystem<Params> {
     fn as_visual_system(self) -> ConditionalSystemDescriptor;
 }
