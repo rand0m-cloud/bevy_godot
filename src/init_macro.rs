@@ -72,7 +72,7 @@ impl Autoload {
         use std::panic::{catch_unwind, resume_unwind, AssertUnwindSafe};
 
         if let Some(app) = self.app.as_mut() {
-            app.insert_resource(GodotFrame);
+            app.insert_resource(GodotVisualFrame);
 
             if let Err(e) = catch_unwind(AssertUnwindSafe(|| app.update())) {
                 self.app = None;
@@ -81,7 +81,7 @@ impl Autoload {
                 resume_unwind(e);
             }
 
-            app.world.remove_resource::<GodotFrame>();
+            app.world.remove_resource::<GodotVisualFrame>();
         }
     }
 
