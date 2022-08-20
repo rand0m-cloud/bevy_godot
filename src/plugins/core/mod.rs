@@ -37,10 +37,10 @@ impl Plugin for GodotCorePlugin {
     }
 }
 
-/// Bevy resource that is available when the app is updated through `_process` callback
-pub struct GodotFrame;
+/// Bevy Resource that is available when the app is updated through `_process` callback
+pub struct GodotVisualFrame;
 
-/// Bevy resource that is available when the app is updated through `_physics_process` callback
+/// Bevy Resource that is available when the app is updated through `_physics_process` callback
 pub struct GodotPhysicsFrame;
 
 /// Adds `as_physics_system` that schedules a system only for the physics frame
@@ -61,7 +61,7 @@ pub trait AsVisualSystem<Params> {
 
 impl<Params, T: IntoSystem<(), (), Params>> AsVisualSystem<Params> for T {
     fn as_visual_system(self) -> ConditionalSystemDescriptor {
-        self.run_if_resource_exists::<GodotFrame>()
+        self.run_if_resource_exists::<GodotVisualFrame>()
     }
 }
 
