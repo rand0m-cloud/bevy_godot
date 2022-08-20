@@ -1,7 +1,10 @@
-use crate::prelude::bevy_prelude::IntoSystem;
+use crate::prelude::bevy_prelude::{IntoSystem, Local};
 use bevy::app::*;
+use bevy::ecs::system::SystemParam;
 use iyes_loopless::condition::ConditionalSystemDescriptor;
 use iyes_loopless::prelude::*;
+use std::marker::PhantomData;
+use std::time::{Duration, Instant};
 
 pub mod godot_ref;
 pub use godot_ref::*;
@@ -47,5 +50,46 @@ pub trait AsPhysicsSystem<Params> {
 impl<Params, T: IntoSystem<(), (), Params>> AsPhysicsSystem<Params> for T {
     fn as_physics_system(self) -> ConditionalSystemDescriptor {
         self.run_if_resource_exists::<GodotPhysicsFrame>()
+    }
+}
+
+pub trait AsVisualSystem<Params> {
+    fn as_visual_system(self) -> ConditionalSystemDescriptor;
+}
+
+impl<Params, T: IntoSystem<(), (), Params>> AsVisualSystem<Params> for T {
+    fn as_visual_system(self) -> ConditionalSystemDescriptor {
+        self.run_if_resource_exists::<GodotFrame>()
+    }
+}
+
+/// SystemParam to keep track of an independent delta time
+///
+/// Not every system runs on a Bevy update and Bevy can be updated multiple
+/// during a "frame".
+#[derive(SystemParam)]
+pub struct SystemDelta<'w, 's> {
+    last_time: Local<'s, Option<Instant>>,
+    #[system_param(ignore)]
+    marker: PhantomData<&'w ()>,
+}
+
+impl<'w, 's> SystemDelta<'w, 's> {
+    /// Returns the time passed since the last invocation
+    pub fn delta(&mut self) -> Duration {
+        let now = Instant::now();
+        let last_time = self.last_time.unwrap_or(now);
+
+        *self.last_time = Some(now);
+
+        now - last_time
+    }
+
+    pub fn delta_seconds(&mut self) -> f32 {
+        self.delta().as_secs_f32()
+    }
+
+    pub fn delta_seconds_f64(&mut self) -> f64 {
+        self.delta().as_secs_f64()
     }
 }

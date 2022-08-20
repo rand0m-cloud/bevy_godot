@@ -19,11 +19,14 @@ impl Plugin for PlayerPlugin {
             .add_system(player_on_ready)
             .add_system_set(
                 SystemSet::on_update(GameState::InGame)
-                    .with_system(move_player)
+                    .with_system(move_player.as_physics_system())
                     .with_system(check_player_death),
             )
             .add_system_set(SystemSet::on_enter(GameState::Countdown).with_system(setup_player))
-            .add_system_set(SystemSet::on_update(GameState::Countdown).with_system(move_player));
+            .add_system_set(
+                SystemSet::on_update(GameState::Countdown)
+                    .with_system(move_player.as_physics_system()),
+            );
     }
 }
 
@@ -62,7 +65,7 @@ fn player_on_ready(
 
 fn move_player(
     mut player: Query<(&Player, &mut ErasedGodotRef, &mut Transform2D)>,
-    time: Res<Time>,
+    mut system_delta: SystemDelta,
 ) {
     let (player, mut player_ref, mut transform) = player.single_mut();
 
@@ -89,7 +92,7 @@ fn move_player(
         Vector2::ZERO
     };
 
-    transform.origin += velocity * time.delta_seconds();
+    transform.origin += velocity * system_delta.delta_seconds();
     transform.origin.x = f32::min(f32::max(0.0, transform.origin.x), screen_size.x);
     transform.origin.y = f32::min(f32::max(0.0, transform.origin.y), screen_size.y);
 
