@@ -3,8 +3,10 @@ A crate for using [Bevy](https://github.com/bevyengine/bevy) with the [Godot Eng
 
 ## Features
 - Godot SceneTree integration
-- Detect Godot object collisions
+- Load Godot Resources as a Bevy Asset
 - Spawn Godot scenes from Bevy
+- Detect Godot object collisions
+- Systems can be scheduled for the visual or physics frame
 - Tracing behind the `trace` and `trace_chrome` feature flags
 
 ## Quickstart
