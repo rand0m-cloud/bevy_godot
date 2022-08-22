@@ -70,26 +70,25 @@ fn update_godot_collisions(
     for event in events.iter() {
         trace!(target: "godot_collisions_update", event = ?event);
 
-        let target = all_entities
-            .iter()
-            .find_map(|(ent, reference)| {
-                if reference.instance_id() == event.target {
-                    Some(ent)
-                } else {
-                    None
-                }
-            })
-            .unwrap();
-        let mut collisions = entities
-            .iter_mut()
-            .find_map(|(reference, collisions)| {
-                if reference.instance_id() == event.origin {
-                    Some(collisions)
-                } else {
-                    None
-                }
-            })
-            .unwrap();
+        let target = all_entities.iter().find_map(|(ent, reference)| {
+            if reference.instance_id() == event.target {
+                Some(ent)
+            } else {
+                None
+            }
+        });
+        let collisions = entities.iter_mut().find_map(|(reference, collisions)| {
+            if reference.instance_id() == event.origin {
+                Some(collisions)
+            } else {
+                None
+            }
+        });
+
+        let (target, mut collisions) = match (target, collisions) {
+            (Some(target), Some(collisions)) => (target, collisions),
+            _ => return,
+        };
 
         match event.event_type {
             CollisionEventType::Started => {
