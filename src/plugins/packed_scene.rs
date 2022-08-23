@@ -1,7 +1,7 @@
 use crate::prelude::{
     bevy_prelude::*,
     godot_prelude::{PackedScene, ResourceLoader},
-    *,
+    Transform, *,
 };
 use gdnative::api::packed_scene::GenEditState;
 
@@ -44,10 +44,18 @@ struct GodotSceneSpawned;
 fn spawn_scene(
     mut commands: Commands,
     mut scene_tree: SceneTreeRef,
-    new_scenes: Query<(&GodotScene, Entity), Without<GodotSceneSpawned>>,
+    new_scenes: Query<
+        (
+            &GodotScene,
+            Entity,
+            Option<&Transform2D>,
+            Option<&Transform>,
+        ),
+        Without<GodotSceneSpawned>,
+    >,
     mut assets: ResMut<Assets<GodotResource>>,
 ) {
-    for (scene, ent) in new_scenes.iter() {
+    for (scene, ent, transform2d, transform) in new_scenes.iter() {
         let resource_loader = ResourceLoader::godot_singleton();
         let packed_scene = match scene {
             GodotScene::ResourcePath(path) => resource_loader
@@ -68,6 +76,26 @@ fn spawn_scene(
                 .instance(GenEditState::DISABLED.0)
                 .unwrap()
         };
+
+        if let Some(transform2d) = transform2d {
+            unsafe {
+                instance
+                    .assume_safe()
+                    .cast::<Node2D>()
+                    .unwrap()
+                    .set_transform(**transform2d);
+            }
+        }
+
+        if let Some(transform) = transform {
+            unsafe {
+                instance
+                    .assume_safe()
+                    .cast::<Spatial>()
+                    .unwrap()
+                    .set_transform(*transform.as_godot());
+            }
+        }
 
         unsafe {
             let scene = scene_tree.get().current_scene().unwrap();
