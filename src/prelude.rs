@@ -18,14 +18,15 @@ pub use bevy::{
     core::prelude::*,
     ecs::prelude::*,
     hierarchy::*,
+    log::prelude::*,
     math::prelude::*,
     reflect::{prelude::*, TypeUuid},
     time::prelude::*,
     utils::prelude::*,
 };
 pub use godot_prelude::{
-    InitHandle, Node, Node2D, Object, Ref, SceneTree, Spatial, TRef, Transform as GodotTransform,
-    Transform2D as GodotTransform2D, Vector2, Vector3,
+    Control, InitHandle, Node, Node2D, Object, Ref, SceneTree, Spatial, TRef,
+    Transform as GodotTransform, Transform2D as GodotTransform2D, Vector2, Vector3,
 };
 
 pub use crate::bevy_godot_init;
