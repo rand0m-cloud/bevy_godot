@@ -1,5 +1,4 @@
-use crate::prelude::bevy_prelude::{IntoSystem, Local};
-use bevy::app::*;
+use crate::prelude::*;
 use bevy::ecs::system::SystemParam;
 use iyes_loopless::condition::ConditionalSystemDescriptor;
 use iyes_loopless::prelude::*;
@@ -93,5 +92,18 @@ impl<'w, 's> SystemDelta<'w, 's> {
 
     pub fn delta_seconds_f64(&mut self) -> f64 {
         self.delta().as_secs_f64()
+    }
+}
+
+pub trait FindEntityByNameExt<T> {
+    fn find_entity_by_name(self, name: &str) -> Option<T>;
+}
+
+impl<'a, T: 'a, U> FindEntityByNameExt<T> for U
+where
+    U: Iterator<Item = (&'a Name, T)>,
+{
+    fn find_entity_by_name(mut self, name: &str) -> Option<T> {
+        self.find_map(|(ent_name, t)| (ent_name.as_str() == name).then_some(t))
     }
 }
