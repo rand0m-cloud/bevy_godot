@@ -1,5 +1,5 @@
 use bevy_asset_loader::prelude::*;
-use bevy_godot::prelude::{bevy_prelude::Mut, *};
+use bevy_godot::prelude::*;
 
 fn init(_handle: &InitHandle) {}
 

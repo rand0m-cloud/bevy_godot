@@ -1,9 +1,6 @@
 use crate::main_menu::MenuAssets;
 use crate::GameState;
-use bevy_godot::prelude::{
-    bevy_prelude::{State, SystemSet},
-    *,
-};
+use bevy_godot::prelude::{godot_prelude::Label, *};
 
 pub struct GameoverPlugin;
 impl Plugin for GameoverPlugin {

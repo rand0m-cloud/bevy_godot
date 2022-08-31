@@ -6,19 +6,26 @@ pub mod bevy_prelude {
 pub use bevy;
 
 pub mod godot_prelude {
-    pub use gdnative::api;
+    pub use gdnative::api::*;
     pub use gdnative::prelude::*;
 }
 pub use gdnative;
 
-pub use bevy_prelude::{
-    AddAsset, App, AssetServer, Assets, Children, Commands, Component, DespawnRecursiveExt, Entity,
-    Handle, HandleUntyped, Name, ParallelSystemDescriptorCoercion, Parent, Plugin, Query, Reflect,
-    ReflectComponent, Res, ResMut, SystemSet, Time, Timer, Transform as BevyTransform, Vec3, World,
+pub use bevy::prelude::Transform as BevyTransform;
+pub use bevy::{
+    app::prelude::*,
+    asset::{prelude::*, *},
+    core::prelude::*,
+    ecs::prelude::*,
+    hierarchy::*,
+    math::prelude::*,
+    reflect::{prelude::*, TypeUuid},
+    time::prelude::*,
+    utils::prelude::*,
 };
 pub use godot_prelude::{
-    api::*, godot_init, methods, GodotObject, InitHandle, NativeClass, Ref, TRef,
-    Transform as GodotTransform, Transform2D as GodotTransform2D,
+    InitHandle, Node, Node2D, Object, Ref, SceneTree, Spatial, TRef, Transform as GodotTransform,
+    Transform2D as GodotTransform2D, Vector2, Vector3,
 };
 
 pub use crate::bevy_godot_init;

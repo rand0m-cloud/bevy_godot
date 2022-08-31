@@ -1,8 +1,7 @@
 use crate::GameState;
 use bevy_asset_loader::prelude::*;
 use bevy_godot::prelude::{
-    bevy_prelude::{Added, Mut, State, SystemSet, With, Without},
-    godot_prelude::Vector2,
+    godot_prelude::{AnimatedSprite, Input},
     *,
 };
 
