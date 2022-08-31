@@ -1,8 +1,7 @@
 use crate::GameState;
 use bevy_asset_loader::prelude::*;
 use bevy_godot::prelude::{
-    bevy_prelude::{Added, EventReader, Mut, SystemSet},
-    godot_prelude::Vector2,
+    godot_prelude::{AnimatedSprite, PathFollow2D, RigidBody2D},
     *,
 };
 use std::f64::consts::PI;

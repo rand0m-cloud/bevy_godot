@@ -173,7 +173,7 @@ impl CollisionWatcher {
 
 #[doc(hidden)]
 pub mod signal_watcher {
-    use crate::prelude::{bevy_prelude::trace, godot_prelude::Variant, *};
+    use crate::prelude::{bevy_prelude::trace, godot_prelude::*, *};
     use std::sync::mpsc::Sender;
 
     #[derive(NativeClass, Default)]
@@ -254,6 +254,6 @@ macro_rules! bevy_godot_init {
             }
         }
 
-        godot_init!(godot_init);
+        bevy_godot::prelude::godot_prelude::godot_init!(godot_init);
     };
 }

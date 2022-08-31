@@ -1,10 +1,4 @@
-use crate::prelude::{
-    godot_prelude::{GodotError, RefCounted, SubClass, ThreadLocal},
-    *,
-};
-use bevy::asset::{AssetLoader, AssetPlugin, AssetServerSettings, LoadContext, LoadedAsset};
-use bevy::reflect::TypeUuid;
-use bevy::utils::BoxedFuture;
+use crate::prelude::{godot_prelude::*, *};
 use std::time::Duration;
 
 pub struct GodotAssetsPlugin;

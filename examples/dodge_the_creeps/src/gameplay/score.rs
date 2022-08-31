@@ -1,5 +1,5 @@
 use crate::{GameState, Score};
-use bevy_godot::prelude::{bevy_prelude::SystemSet, *};
+use bevy_godot::prelude::{godot_prelude::Label, *};
 
 pub struct ScorePlugin;
 impl Plugin for ScorePlugin {
