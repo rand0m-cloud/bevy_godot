@@ -12,24 +12,9 @@ impl Plugin for GodotInputEventPlugin {
     }
 }
 
-// #[derive(Debug)]
-// pub struct GodotInputEvent {
-//     // Should this be cloned like origin in GodotSignal?
-//     pub input_event: Ref<ErasedGodotRef>,
-// }
-
-// impl GodotInputEvent {
-//     #[doc(hidden)]
-//     pub fn new(input_event: TRef<InputEvent>) -> Self {
-//         Self {
-//             input_event: unsafe { ErasedGodotRef::from_instance_id(input_event.get_instance_id()) },
-//         }
-//     }
-// }
-
 #[doc(hidden)]
-/// Can't use ErasedGodotRef code (see above comment) here because InputEvent isn't manually-managed,
-/// required by ErasedGodotRef.get().
+// Can't use ErasedGodotRef code here in place of Ref<InputEvent> because InputEvent isn't manually-managed,
+// required by ErasedGodotRef.get().
 pub struct InputEventReader(pub std::sync::mpsc::Receiver<Ref<InputEvent>>);
 
 fn write_godot_input_events(

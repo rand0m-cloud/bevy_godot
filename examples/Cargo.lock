@@ -969,15 +969,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0206175f82b8d6bf6652ff7d71a1e27fd2e4efde587fd368662814d6ec1d9ce0"
 
 [[package]]
-name = "events_demo"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "bevy_godot",
- "gdnative",
-]
-
-[[package]]
 name = "fastrand"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1309,6 +1300,15 @@ name = "inplace_it"
 version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67f0347836f3f6362c1e7efdadde2b1c4b4556d211310b70631bae7eb692070b"
+
+[[package]]
+name = "input_events_demo"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_godot",
+ "gdnative",
+]
 
 [[package]]
 name = "instant"
