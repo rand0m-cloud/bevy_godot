@@ -6,7 +6,7 @@ license = "MIT"
 
 [[bin]]
 path = "../run_godot.rs"
-name = "run_events_demo"
+name = "run_input_events_demo"
 
 [lib]
 crate-type = ["cdylib"]
