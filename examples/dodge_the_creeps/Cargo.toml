@@ -6,13 +6,12 @@ license = "MIT"
 
 [[bin]]
 path = "../run_godot.rs"
-name = "run_dodge_the_creeps"
+name = "dodge_the_creeps"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-gdnative = "0.10"
 bevy = {version = "0.8", default-features = false}
 bevy_godot = {path = "../.."}
 fastrand = "1.8.0"

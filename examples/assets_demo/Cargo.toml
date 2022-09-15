@@ -12,7 +12,6 @@ name = "assets_demo"
 crate-type = ["cdylib"]
 
 [dependencies]
-gdnative = "0.10"
 bevy = {version = "0.8", default-features = false}
 bevy_godot = {path = "../.."}
 bevy_asset_loader = "0.12.0"
