@@ -14,6 +14,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ahash"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57e6e951cfbb2db8de1828d49073a113a29fd7117b1596caa781a258c7e38d72"
+dependencies = [
+ "cfg-if",
+ "getrandom",
+ "once_cell",
+ "version_check",
+]
+
+[[package]]
 name = "aho-corasick"
 version = "0.7.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -582,7 +594,7 @@ version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8bda6dada53e546845887ae7357eec57b8d547ef71627b716b33839b4a98b687"
 dependencies = [
- "ahash",
+ "ahash 0.7.6",
  "getrandom",
  "hashbrown",
  "instant",
@@ -607,9 +619,9 @@ dependencies = [
 
 [[package]]
 name = "bindgen"
-version = "0.59.2"
+version = "0.60.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2bd2a9a458e8f4304c52c43ebb0cfbd520289f8379a52e329a38afda99bf8eb8"
+checksum = "062dddbc1ba4aca46de6338e2bf87771414c335f7b2f2036e8f3e9befebf88e6"
 dependencies = [
  "bitflags",
  "cexpr",
@@ -1022,9 +1034,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "629bee0adcf738df35857b2138d19fc06c08dda52dc436f174d706598014a75f"
+checksum = "4906b3b53db577dc8889779ab3f3885330da77e5524d87a684fd67e0ea000d38"
 dependencies = [
  "gdnative-bindings",
  "gdnative-core",
@@ -1033,24 +1045,22 @@ dependencies = [
 
 [[package]]
 name = "gdnative-bindings"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b64c284f6fb4e9773ac36be7a20b942562d142979703568fedf4b04a65f6991"
+checksum = "0b60ea424a3c68b4e8991b69456f2c327265462b70e0d8c57a6096457c966980"
 dependencies = [
- "bitflags",
  "gdnative-core",
- "gdnative-sys",
  "gdnative_bindings_generator",
  "libc",
 ]
 
 [[package]]
 name = "gdnative-core"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab96ca7f3484ee0c36518237ba79165c7ca5dc8c9922722e55a9d71f50dce1e5"
+checksum = "8046a46ae854e1773a90c917924dd5048dbc8a1ed59b7deb4c03eb5c984f5cda"
 dependencies = [
- "ahash",
+ "ahash 0.8.0",
  "approx",
  "atomic-take",
  "bitflags",
@@ -1065,9 +1075,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative-derive"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f1d2921c7d2ecb418346761766f441b190a3293327228a1cd8491a1ff60a973"
+checksum = "9cde9ac9d6d3c6918739506a5e80907bb25dcee5bf3597e002256d35f6572529"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1076,9 +1086,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative-impl-proc-macros"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3fd167778dd006489c1995c24429ecee16b8ebe53a5e2b76a6796a5ff697e2c"
+checksum = "40f3f0af08634792e613aabdbc74fb3af360af9dbd985ab36ef81ce787f92f93"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1087,9 +1097,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative-sys"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "813a974fadc7287d4afc6ea3caeba123ebdd9292e672d8886fd7542329f01ade"
+checksum = "9e816ffa3fa62fd2f26f4162520690682f94016ff417b80281cf2a7c00f02475"
 dependencies = [
  "bindgen",
  "libc",
@@ -1101,12 +1111,11 @@ dependencies = [
 
 [[package]]
 name = "gdnative_bindings_generator"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0a0ebb63923612b59efe96d76b26053a3124e42ddb329028eecedc1ceb792be"
+checksum = "45c3f73f060789b1ac94e775cc0c2277a9e7968b80745cbf8dd08e68e95ef2f0"
 dependencies = [
  "heck",
- "memchr",
  "miniserde",
  "proc-macro2",
  "quote",
@@ -1208,7 +1217,7 @@ version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
 dependencies = [
- "ahash",
+ "ahash 0.7.6",
  "serde",
 ]
 
@@ -1799,9 +1808,9 @@ checksum = "f1382d1f0a252c4bf97dc20d979a2fdd05b024acd7c2ed0f7595d7817666a157"
 
 [[package]]
 name = "roxmltree"
-version = "0.14.1"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "921904a62e410e37e215c40381b7117f830d9d89ba60ab5236170541dd25646b"
+checksum = "112908c3ac4711a1554b3948432ecaf5f061a951aa326977b63f7f72a86a4c0e"
 dependencies = [
  "xmlparser",
 ]

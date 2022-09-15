@@ -18,8 +18,8 @@ impl Autoload {
         Self::default()
     }
 
-    #[export]
-    fn _ready(&mut self, base: &Node) {
+    #[method]
+    fn _ready(&mut self, #[base] base: &Node) {
         let mut app = App::new();
         app.add_plugin(GodotPlugin);
 
@@ -67,8 +67,8 @@ impl Autoload {
         self.app = Some(app);
     }
 
-    #[export]
-    fn _process(&mut self, _base: TRef<Node>, _delta: f32) {
+    #[method]
+    fn _process(&mut self, _delta: f32) {
         use std::panic::{catch_unwind, resume_unwind, AssertUnwindSafe};
 
         if let Some(app) = self.app.as_mut() {
@@ -85,8 +85,8 @@ impl Autoload {
         }
     }
 
-    #[export]
-    fn _physics_process(&mut self, _base: TRef<Node>, _delta: f32) {
+    #[method]
+    fn _physics_process(&mut self, _delta: f32) {
         use std::panic::{catch_unwind, resume_unwind, AssertUnwindSafe};
 
         if let Some(app) = self.app.as_mut() {
@@ -123,8 +123,8 @@ impl SceneTreeWatcher {
         Self::default()
     }
 
-    #[export]
-    fn scene_tree_event(&self, _base: TRef<Node>, node: Ref<Node>, event_type: SceneTreeEventType) {
+    #[method]
+    fn scene_tree_event(&self, node: Ref<Node>, event_type: SceneTreeEventType) {
         self.notification_channel
             .as_ref()
             .unwrap()
@@ -150,10 +150,9 @@ impl CollisionWatcher {
         Self::default()
     }
 
-    #[export]
+    #[method]
     fn collision_event(
         &self,
-        _base: TRef<Node>,
         target: Ref<Node>,
         origin: Ref<Node>,
         event_type: CollisionEventType,
@@ -189,10 +188,10 @@ pub mod signal_watcher {
         }
 
         #[allow(clippy::too_many_arguments)]
-        #[export]
+        #[method]
         fn event(
             &self,
-            base: TRef<Node>,
+            #[base] base: TRef<Node>,
             #[opt] arg_1: Option<Variant>,
             #[opt] arg_2: Option<Variant>,
             #[opt] arg_3: Option<Variant>,

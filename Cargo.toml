@@ -11,7 +11,7 @@ trace = ["bevy/trace"]
 trace_chrome = ["trace", "bevy/trace_chrome"]
 
 [dependencies]
-gdnative = "0.10"
+gdnative = "0.10.1"
 bevy = {version = "0.8", default-features = false, features = ["bevy_asset"]}
 anyhow = "1.0.58"
 lazy_static = "1.4.0"
