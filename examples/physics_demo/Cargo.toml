@@ -6,12 +6,11 @@ license = "MIT"
 
 [[bin]]
 path = "../run_godot.rs"
-name = "run_physics_demo"
+name = "physics_demo"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-gdnative = "0.10"
 bevy = {version = "0.8", default-features = false}
 bevy_godot = {path = "../.."}

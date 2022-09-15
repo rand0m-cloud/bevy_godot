@@ -6,12 +6,11 @@ license = "MIT"
 
 [[bin]]
 path = "../run_godot.rs"
-name = "run_spawn_scene"
+name = "spawn_scene"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-gdnative = "0.10"
 bevy_godot = {path = "../.."}
 bevy = {version = "0.8", default-features = false}
