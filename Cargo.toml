@@ -2,7 +2,7 @@
 name = "bevy_godot"
 version = "0.3.0"
 edition = "2021"
-license = "MIT"
+license = "MIT OR Apache-2.0"
 
 [features]
 default = []
