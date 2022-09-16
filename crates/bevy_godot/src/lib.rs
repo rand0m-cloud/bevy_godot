@@ -1,6 +1,7 @@
 #![allow(clippy::type_complexity)]
 use bevy::app::*;
 
+pub mod node_tree_view;
 pub mod plugins;
 pub mod prelude;
 

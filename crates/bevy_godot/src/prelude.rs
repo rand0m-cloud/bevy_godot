@@ -31,3 +31,6 @@ pub use godot_prelude::{
 
 pub use crate::bevy_godot_init;
 pub use crate::GodotPlugin;
+
+pub use crate::node_tree_view::NodeTreeView;
+pub use bevy_godot_proc_macro::NodeTreeView;

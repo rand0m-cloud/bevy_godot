@@ -1,0 +1,6 @@
+[gd_scene format=2]
+
+[node name="Example" type="CSGBox"]
+
+[node name="CSGSphere" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.03646, 0 )

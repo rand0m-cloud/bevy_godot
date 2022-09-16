@@ -298,9 +298,19 @@ version = "0.3.0"
 dependencies = [
  "anyhow",
  "bevy",
+ "bevy_godot_proc_macro",
  "gdnative",
  "iyes_loopless",
  "lazy_static",
+]
+
+[[package]]
+name = "bevy_godot_proc_macro"
+version = "0.3.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
