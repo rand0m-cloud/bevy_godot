@@ -12,5 +12,5 @@ name = "spawn_scene"
 crate-type = ["cdylib"]
 
 [dependencies]
-bevy_godot = {path = "../.."}
 bevy = {version = "0.8", default-features = false}
+bevy_godot = {path = "../../crates/bevy_godot"}
