@@ -4,6 +4,7 @@ members = [
             "physics_demo",
             "scene_tree_test",
             "spawn_scene",
-            "dodge_the_creeps"
+            "dodge_the_creeps",
+            "node_tree_view",
         ]
 resolver = "2"

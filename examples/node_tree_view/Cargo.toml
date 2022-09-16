@@ -1,0 +1,16 @@
+[package]
+name = "node_tree_view"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[[bin]]
+path = "../run_godot.rs"
+name = "node_tree_view"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+bevy = {version = "0.8", default-features = false}
+bevy_godot = {path = "../../crates/bevy_godot"}

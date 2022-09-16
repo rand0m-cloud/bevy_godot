@@ -1,0 +1,7 @@
+[gd_resource type="GDNativeLibrary" format=2]
+
+[resource]
+entry/Windows.64 = "res://../../target/debug/libnode_tree_view.so"
+entry/X11.64 = "res://../../target/debug/libnode_tree_view.so"
+dependency/Windows.64 = [  ]
+dependency/X11.64 = [  ]
