@@ -1,0 +1,18 @@
+[package]
+name = "bevy_godot"
+version = "0.3.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[features]
+default = []
+
+trace = ["bevy/trace"]
+trace_chrome = ["trace", "bevy/trace_chrome"]
+
+[dependencies]
+gdnative = "0.10.1"
+bevy = {version = "0.8", default-features = false, features = ["bevy_asset"]}
+anyhow = "1.0.58"
+lazy_static = "1.4.0"
+iyes_loopless = "0.7"
