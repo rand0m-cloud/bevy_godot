@@ -67,6 +67,15 @@ fn spawn_mob(
         .insert(GodotScene::from_handle(&assets.mob_scn));
 }
 
+#[derive(NodeTreeView)]
+pub struct MobNodes {
+    #[node("AnimatedSprite")]
+    animated_sprite: ErasedGodotRef,
+
+    #[node("VisibilityNotifier2D")]
+    visibility_notifier: ErasedGodotRef,
+}
+
 fn new_mob(
     mut entities: Query<(&Mob, &mut ErasedGodotRef), Added<Mob>>,
     mut scene_tree: SceneTreeRef,
@@ -77,13 +86,9 @@ fn new_mob(
         let velocity = Vector2::new(fastrand::f32() * 100.0 + 150.0, 0.0);
         mob.set_linear_velocity(velocity.rotated(mob_data.direction as f32));
 
-        let animated_sprite = unsafe {
-            mob.get_node("AnimatedSprite")
-                .unwrap()
-                .assume_safe()
-                .cast::<AnimatedSprite>()
-                .unwrap()
-        };
+        let mut mob_nodes = MobNodes::from_node(mob);
+
+        let animated_sprite = mob_nodes.animated_sprite.get::<AnimatedSprite>();
 
         animated_sprite.play("", false);
 
@@ -97,10 +102,8 @@ fn new_mob(
         let mob_type_index = fastrand::i32(0..mob_types.len());
         animated_sprite.set_animation(mob_types.get(mob_type_index));
 
-        let visibility_notifier = mob.get_node("VisibilityNotifier2D").unwrap();
-
         connect_godot_signal(
-            &mut unsafe { ErasedGodotRef::new(visibility_notifier.assume_unique()) },
+            &mut mob_nodes.visibility_notifier,
             "screen_exited",
             &mut scene_tree,
         );

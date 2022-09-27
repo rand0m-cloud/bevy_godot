@@ -54,24 +54,21 @@ fn init_assets(
         .cast::<AudioStream>()
         .unwrap();
 
-    let bg_music_player = AudioStreamPlayer::new().into_shared();
-    let death_sfx_player = AudioStreamPlayer::new().into_shared();
+    let mut bg_music_player = unsafe { ErasedGodotRef::new(AudioStreamPlayer::new()) };
+    let mut death_sfx_player = unsafe { ErasedGodotRef::new(AudioStreamPlayer::new()) };
 
-    unsafe {
-        bg_music_player.assume_safe().set_stream(bg_music_stream);
-        death_sfx_player.assume_safe().set_stream(death_sfx_stream);
-    }
+    bg_music_player
+        .get::<AudioStreamPlayer>()
+        .set_stream(bg_music_stream);
+    death_sfx_player
+        .get::<AudioStreamPlayer>()
+        .set_stream(death_sfx_stream);
 
-    unsafe {
-        let root = scene_tree.get().root().unwrap().assume_safe();
-        root.add_child(bg_music_player, true);
-        root.add_child(death_sfx_player, true);
-    }
+    scene_tree.add_to_root(bg_music_player.get::<Node>());
+    scene_tree.add_to_root(death_sfx_player.get::<Node>());
 
-    music_assets.bg_music_player =
-        godot_assets.add(unsafe { ErasedGodotRef::new(bg_music_player.assume_unique()) });
-    music_assets.death_sfx_player =
-        godot_assets.add(unsafe { ErasedGodotRef::new(death_sfx_player.assume_unique()) });
+    music_assets.bg_music_player = godot_assets.add(bg_music_player);
+    music_assets.death_sfx_player = godot_assets.add(death_sfx_player);
 }
 
 fn play_bg_music(music_assets: Res<MusicAssets>, mut godot_assets: ResMut<Assets<ErasedGodotRef>>) {

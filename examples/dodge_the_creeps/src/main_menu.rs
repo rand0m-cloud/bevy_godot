@@ -27,29 +27,24 @@ impl Plugin for MainMenuPlugin {
     }
 }
 
+#[derive(NodeTreeView)]
+pub struct MenuUi {
+    #[node("Main/CanvasLayer/HUD/MainMenu/MessageLabel")]
+    menu_label: ErasedGodotRef,
+
+    #[node("Main/CanvasLayer/HUD/MainMenu/StartButton")]
+    play_button: ErasedGodotRef,
+}
+
 fn init_menu_assets(
     mut menu_assets: ResMut<MenuAssets>,
     mut assets: ResMut<Assets<ErasedGodotRef>>,
     mut scene_tree: SceneTreeRef,
 ) {
-    unsafe {
-        let scene_root = scene_tree.get().root().unwrap().assume_safe();
-        let menu_label = ErasedGodotRef::new(
-            scene_root
-                .get_node("Main/CanvasLayer/HUD/MainMenu/MessageLabel")
-                .unwrap()
-                .assume_unique(),
-        );
-        let play_button = ErasedGodotRef::new(
-            scene_root
-                .get_node("Main/CanvasLayer/HUD/MainMenu/StartButton")
-                .unwrap()
-                .assume_unique(),
-        );
+    let menu_ui = MenuUi::from_node(scene_tree.get_root());
 
-        menu_assets.menu_label = assets.add(menu_label);
-        menu_assets.play_button = assets.add(play_button);
-    }
+    menu_assets.menu_label = assets.add(menu_ui.menu_label);
+    menu_assets.play_button = assets.add(menu_ui.play_button);
 }
 
 fn connect_play_button(
