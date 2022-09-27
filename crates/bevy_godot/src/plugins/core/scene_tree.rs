@@ -1,12 +1,8 @@
 use crate::prelude::{
-    bevy_prelude::{debug, trace, BuildChildren, CoreStage, EventReader, EventWriter, NonSendMut},
-    godot_prelude::{FromVariant, SubClass, ToVariant, Variant, VariantArray},
+    godot_prelude::{Engine, FromVariant, SubClass, ToVariant, Variant, VariantArray, Viewport},
     *,
 };
-use bevy::app::StartupStage;
-use bevy::ecs::event::Events;
 use bevy::ecs::system::SystemParam;
-use gdnative::api::Engine;
 use std::collections::HashMap;
 use std::marker::PhantomData;
 
@@ -39,6 +35,22 @@ pub struct SceneTreeRef<'w, 's> {
 impl<'w, 's> SceneTreeRef<'w, 's> {
     pub fn get(&mut self) -> TRef<SceneTree> {
         self.godot_ref.0.get()
+    }
+
+    pub fn get_current_scene(&mut self) -> TRef<Node> {
+        unsafe { self.get().current_scene().unwrap().assume_safe() }
+    }
+
+    pub fn get_root(&mut self) -> TRef<Viewport> {
+        unsafe { self.get().root().unwrap().assume_safe() }
+    }
+
+    pub fn add_to_scene<T: SubClass<Node>>(&mut self, node: TRef<T>) {
+        self.get_current_scene().add_child(node.upcast(), true);
+    }
+
+    pub fn add_to_root<T: SubClass<Node>>(&mut self, node: TRef<T>) {
+        self.get_root().add_child(node.upcast(), true);
     }
 }
 

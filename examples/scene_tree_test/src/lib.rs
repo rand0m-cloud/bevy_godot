@@ -31,23 +31,17 @@ fn spawn_cube(
 ) {
     timer.0.tick(time.delta());
     if timer.0.just_finished() {
-        let csg_node = CSGBox::new().into_shared();
+        let csg_node = CSGBox::new();
+        let mut csg_node = unsafe { ErasedGodotRef::new(csg_node) };
 
-        unsafe {
-            scene_tree
-                .get()
-                .current_scene()
-                .unwrap()
-                .assume_safe()
-                .add_child(csg_node, false);
-        }
+        scene_tree.add_to_scene(csg_node.get::<Node>());
 
         commands
             .spawn()
             .insert(Cube {
                 lifetime: Timer::from_seconds(3.0, false),
             })
-            .insert(unsafe { ErasedGodotRef::new(csg_node.assume_unique()) })
+            .insert(csg_node)
             .insert(Transform::from(BevyTransform::from_translation(Vec3::new(
                 10.0 * time.seconds_since_startup().sin() as f32,
                 5.0 * time.seconds_since_startup().sin() as f32,

@@ -41,24 +41,17 @@ fn spawn_player(mut commands: Commands, assets: Res<PlayerAssets>) {
         .insert(Player { speed: 400.0 });
 }
 
-fn player_on_ready(
-    mut player: Query<&mut ErasedGodotRef, Added<Player>>,
-    _scene_tree: SceneTreeRef,
-) {
+#[derive(NodeTreeView)]
+pub struct PlayerStartPosition(#[node("/root/Main/StartPosition")] ErasedGodotRef);
+
+fn player_on_ready(mut player: Query<&mut ErasedGodotRef, Added<Player>>) {
     if let Ok(mut player) = player.get_single_mut() {
         let player = player.get::<Node2D>();
 
         player.set_visible(false);
 
-        let start_position = unsafe {
-            player
-                .get_node("/root/Main/StartPosition")
-                .unwrap()
-                .assume_safe()
-                .cast::<Node2D>()
-                .unwrap()
-        };
-        player.set_position(start_position.position());
+        let mut start_position = PlayerStartPosition::from_node(player);
+        player.set_position(start_position.0.get::<Node2D>().position());
     }
 }
 
