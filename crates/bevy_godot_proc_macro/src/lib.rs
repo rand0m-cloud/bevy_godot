@@ -63,9 +63,15 @@ fn node_tree_view(input: DeriveInput) -> Result<TokenStream2> {
         quote! { Self ( #field_exprs ) }
     };
 
+    let node_tree_view = quote! { ::bevy_godot::prelude::NodeTreeView };
+    let subclass = quote! { ::bevy_godot::prelude::godot_prelude::SubClass };
+    let node = quote! { ::bevy_godot::prelude::Node };
+    let tref = quote! { ::bevy_godot::prelude::TRef };
+
     let expanded = quote! {
-       impl NodeTreeView for #item {
-           fn from_node(node: &Node) -> Self {
+       impl #node_tree_view for #item {
+           fn from_node<T: #subclass<#node>>(node: #tref<T>) -> Self {
+               let node = node.upcast::<#node>();
                #self_expr
            }
        }

@@ -29,7 +29,7 @@ fn setup_ui(mut commands: Commands, mut entities: Query<(&Name, &mut ErasedGodot
         .iter_mut()
         .find_entity_by_name("UiCanvasLayer")
         .unwrap();
-    let ui = Ui::from_node(&ui_canvas.get::<Node>());
+    let ui = Ui::from_node(ui_canvas.get::<Node>());
 
     commands.spawn().insert(ui);
 }
