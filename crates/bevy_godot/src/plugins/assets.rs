@@ -27,10 +27,25 @@ pub struct GodotResourceLoader;
 pub struct GodotResource(pub Ref<Resource>);
 
 impl GodotResource {
-    pub fn get<T: GodotObject<Memory = RefCounted> + SubClass<Resource>>(
-        &mut self,
-    ) -> Option<Ref<T, ThreadLocal>> {
-        unsafe { self.0.clone().assume_thread_local().cast() }
+    pub fn new<T>(reference: Ref<T>) -> Self
+    where
+        T: GodotObject<Memory = RefCounted> + SubClass<Resource>,
+    {
+        Self(reference.upcast())
+    }
+
+    pub fn get<T>(&mut self) -> Ref<T, Unique>
+    where
+        T: GodotObject<Memory = RefCounted> + SubClass<Resource>,
+    {
+        self.try_get().unwrap()
+    }
+
+    pub fn try_get<T>(&mut self) -> Option<Ref<T, Unique>>
+    where
+        T: GodotObject<Memory = RefCounted> + SubClass<Resource>,
+    {
+        unsafe { self.0.clone().assume_unique().cast() }
     }
 }
 
