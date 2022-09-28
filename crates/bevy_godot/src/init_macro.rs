@@ -65,6 +65,9 @@ impl Autoload {
         }
 
         self.app = Some(app);
+
+        // disable pausing on the autoload to allow bevy updates when paused
+        base.set_pause_mode(Node::PAUSE_MODE_PROCESS);
     }
 
     #[method]
