@@ -20,6 +20,9 @@ pub use collisions::*;
 pub mod signals;
 pub use signals::*;
 
+pub mod input_event;
+pub use input_event::*;
+
 pub struct GodotCorePlugin;
 
 impl Plugin for GodotCorePlugin {
@@ -32,7 +35,8 @@ impl Plugin for GodotCorePlugin {
             .add_plugin(GodotSceneTreePlugin)
             .add_plugin(GodotTransformsPlugin)
             .add_plugin(GodotCollisionsPlugin)
-            .add_plugin(GodotSignalsPlugin);
+            .add_plugin(GodotSignalsPlugin)
+            .add_plugin(GodotInputEventPlugin);
     }
 }
 

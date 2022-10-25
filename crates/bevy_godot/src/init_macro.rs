@@ -1,4 +1,7 @@
-use crate::prelude::{godot_prelude::*, *};
+use crate::prelude::{
+    godot_prelude::{InputEvent as GodotInputEvent, *},
+    *,
+};
 use lazy_static::lazy_static;
 use std::sync::{
     mpsc::{channel, Sender},
@@ -64,6 +67,19 @@ impl Autoload {
             app.insert_non_send_resource(GodotSignalReader(reciever));
         }
 
+        {
+            let (sender, reciever) = channel();
+            let input_event_watcher = InputEventWatcher::new_instance();
+            input_event_watcher
+                .map_mut(|script, _base| script.notification_channel = Some(sender))
+                .unwrap();
+            input_event_watcher.base().set_name("InputEventWatcher");
+
+            base.add_child(input_event_watcher.into_base().into_shared(), true);
+
+            app.insert_non_send_resource(InputEventReader(reciever));
+        }
+
         self.app = Some(app);
 
         // disable pausing on the autoload to allow bevy updates when paused
@@ -112,6 +128,7 @@ pub fn godot_init(init: &InitHandle) {
     init.add_class::<SceneTreeWatcher>();
     init.add_class::<CollisionWatcher>();
     init.add_class::<signal_watcher::GodotSignalWatcher>();
+    init.add_class::<InputEventWatcher>();
 }
 
 #[derive(NativeClass, Default)]
@@ -234,6 +251,37 @@ pub mod signal_watcher {
                 .send(signal_event)
                 .unwrap();
         }
+    }
+}
+
+#[derive(NativeClass, Default)]
+#[inherit(Node)]
+struct InputEventWatcher {
+    notification_channel: Option<Sender<(InputEventType, Ref<GodotInputEvent>)>>,
+}
+
+#[methods]
+impl InputEventWatcher {
+    fn new(_base: &Node) -> Self {
+        Self::default()
+    }
+
+    #[method]
+    fn _unhandled_input(&mut self, input_event: Ref<GodotInputEvent>) {
+        self.notification_channel
+            .as_ref()
+            .unwrap()
+            .send((InputEventType::Unhandled, input_event))
+            .unwrap();
+    }
+
+    #[method]
+    fn _input(&mut self, input_event: Ref<GodotInputEvent>) {
+        self.notification_channel
+            .as_ref()
+            .unwrap()
+            .send((InputEventType::Normal, input_event))
+            .unwrap();
     }
 }
 
