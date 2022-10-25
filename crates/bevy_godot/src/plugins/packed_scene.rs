@@ -1,7 +1,6 @@
 use crate::prelude::{
-    bevy_prelude::*,
     godot_prelude::{PackedScene, ResourceLoader},
-    Transform, *,
+    *,
 };
 use gdnative::api::packed_scene::GenEditState;
 

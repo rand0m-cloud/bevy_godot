@@ -1,9 +1,7 @@
 use crate::prelude::{
-    bevy_prelude::{CoreStage, EventWriter, NonSendMut},
     godot_prelude::{Variant, VariantArray},
     *,
 };
-use bevy::ecs::event::Events;
 
 pub struct GodotSignalsPlugin;
 

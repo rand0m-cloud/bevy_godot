@@ -21,13 +21,7 @@ fn update_score_counter(score: Res<Score>, mut entities: Query<(&Name, &mut Eras
     if score.is_changed() {
         let mut score_counter_label = entities
             .iter_mut()
-            .find_map(|(name, reference)| {
-                if name.as_str() == "ScoreLabel" {
-                    Some(reference)
-                } else {
-                    None
-                }
-            })
+            .find_entity_by_name("ScoreLabel")
             .unwrap();
 
         score_counter_label

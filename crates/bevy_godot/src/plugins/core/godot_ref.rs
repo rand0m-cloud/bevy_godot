@@ -1,13 +1,11 @@
 use crate::prelude::*;
 use bevy::reflect::TypeUuid;
 use gdnative::{
-    api::Object,
     object::{
         bounds::{RefImplBound, SafeAsRaw},
-        memory::ManuallyManaged,
         ownership::Ownership,
-        GodotObject, Ref, SubClass, TRef,
     },
+    prelude::{GodotObject, ManuallyManaged, Object, Ref, SubClass, TRef},
 };
 
 #[derive(Component, Reflect, Clone, Default, Debug, TypeUuid)]

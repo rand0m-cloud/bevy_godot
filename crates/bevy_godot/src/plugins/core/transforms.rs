@@ -1,4 +1,4 @@
-use crate::prelude::{bevy_prelude::*, godot_prelude::*, *};
+use crate::prelude::{godot_prelude::*, *};
 use std::marker::PhantomData;
 
 #[derive(Debug, Component, Default, Copy, Clone)]
