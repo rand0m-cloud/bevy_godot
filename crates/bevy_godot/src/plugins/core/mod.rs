@@ -48,6 +48,7 @@ pub struct GodotPhysicsFrame;
 
 /// Adds `as_physics_system` that schedules a system only for the physics frame
 pub trait AsPhysicsSystem<Params> {
+    #[allow(clippy::wrong_self_convention)]
     fn as_physics_system(self) -> ConditionalSystemDescriptor;
 }
 
@@ -59,6 +60,7 @@ impl<Params, T: IntoSystem<(), (), Params>> AsPhysicsSystem<Params> for T {
 
 /// Adds `as_visual_system` that schedules a system only for the frame
 pub trait AsVisualSystem<Params> {
+    #[allow(clippy::wrong_self_convention)]
     fn as_visual_system(self) -> ConditionalSystemDescriptor;
 }
 

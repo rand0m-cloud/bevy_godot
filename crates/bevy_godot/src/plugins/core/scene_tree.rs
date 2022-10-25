@@ -134,7 +134,7 @@ fn connect_scene_tree(mut scene_tree: SceneTreeRef) {
             "node_added",
             watcher,
             "scene_tree_event",
-            VariantArray::from_iter(&[SceneTreeEventType::NodeAdded]).into_shared(),
+            VariantArray::from_iter([SceneTreeEventType::NodeAdded]).into_shared(),
             0,
         )
         .unwrap();
@@ -144,7 +144,7 @@ fn connect_scene_tree(mut scene_tree: SceneTreeRef) {
             "node_removed",
             watcher,
             "scene_tree_event",
-            VariantArray::from_iter(&[SceneTreeEventType::NodeRemoved]).into_shared(),
+            VariantArray::from_iter([SceneTreeEventType::NodeRemoved]).into_shared(),
             0,
         )
         .unwrap();
@@ -154,7 +154,7 @@ fn connect_scene_tree(mut scene_tree: SceneTreeRef) {
             "node_renamed",
             watcher,
             "scene_tree_event",
-            VariantArray::from_iter(&[SceneTreeEventType::NodeRenamed]).into_shared(),
+            VariantArray::from_iter([SceneTreeEventType::NodeRenamed]).into_shared(),
             0,
         )
         .unwrap();
