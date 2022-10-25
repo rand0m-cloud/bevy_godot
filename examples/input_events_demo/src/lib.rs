@@ -1,7 +1,4 @@
-use bevy_godot::prelude::{
-    godot_prelude::{InputEvent, InputEventMouseMotion},
-    *,
-};
+use bevy_godot::prelude::{godot_prelude::InputEventMouseMotion, *};
 
 fn init(_handle: &InitHandle) {}
 
@@ -11,13 +8,10 @@ fn build_app(app: &mut App) {
 
 bevy_godot_init!(init, build_app);
 
-fn print_mouse_motion(mut input_events: EventReader<Ref<InputEvent>>) {
+fn print_mouse_motion(mut input_events: EventReader<UnhandledInputEvent>) {
     for input_event in input_events.iter() {
-        let input_event = unsafe { input_event.assume_safe().cast::<InputEventMouseMotion>() };
-
-        match input_event {
-            Some(evt) => println!("{:?}", evt.speed()),
-            None => (),
+        if let Some(evt) = input_event.try_get::<InputEventMouseMotion>() {
+            println!("{:?}", evt.speed());
         }
     }
 }

@@ -1,4 +1,7 @@
-use crate::prelude::{godot_prelude::*, *};
+use crate::prelude::{
+    godot_prelude::{InputEvent as GodotInputEvent, *},
+    *,
+};
 use lazy_static::lazy_static;
 use std::sync::{
     mpsc::{channel, Sender},
@@ -254,7 +257,7 @@ pub mod signal_watcher {
 #[derive(NativeClass, Default)]
 #[inherit(Node)]
 struct InputEventWatcher {
-    notification_channel: Option<Sender<Ref<InputEvent>>>,
+    notification_channel: Option<Sender<(InputEventType, Ref<GodotInputEvent>)>>,
 }
 
 #[methods]
@@ -264,11 +267,20 @@ impl InputEventWatcher {
     }
 
     #[method]
-    fn _unhandled_input(&mut self, input_event: Ref<InputEvent>) {
+    fn _unhandled_input(&mut self, input_event: Ref<GodotInputEvent>) {
         self.notification_channel
             .as_ref()
             .unwrap()
-            .send(input_event)
+            .send((InputEventType::Unhandled, input_event))
+            .unwrap();
+    }
+
+    #[method]
+    fn _input(&mut self, input_event: Ref<GodotInputEvent>) {
+        self.notification_channel
+            .as_ref()
+            .unwrap()
+            .send((InputEventType::Normal, input_event))
             .unwrap();
     }
 }
