@@ -70,18 +70,21 @@ impl<Params, T: IntoSystem<(), (), Params>> AsVisualSystem<Params> for T {
     }
 }
 
+#[deprecated]
+pub type SystemDelta<'w, 's> = SystemDeltaTimer<'w, 's>;
+
 /// SystemParam to keep track of an independent delta time
 ///
 /// Not every system runs on a Bevy update and Bevy can be updated multiple
 /// during a "frame".
 #[derive(SystemParam)]
-pub struct SystemDelta<'w, 's> {
+pub struct SystemDeltaTimer<'w, 's> {
     last_time: Local<'s, Option<Instant>>,
     #[system_param(ignore)]
     marker: PhantomData<&'w ()>,
 }
 
-impl<'w, 's> SystemDelta<'w, 's> {
+impl<'w, 's> SystemDeltaTimer<'w, 's> {
     /// Returns the time passed since the last invocation
     pub fn delta(&mut self) -> Duration {
         let now = Instant::now();
