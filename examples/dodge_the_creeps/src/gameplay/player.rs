@@ -57,7 +57,7 @@ fn player_on_ready(mut player: Query<&mut ErasedGodotRef, Added<Player>>) {
 
 fn move_player(
     mut player: Query<(&Player, &mut ErasedGodotRef, &mut Transform2D)>,
-    mut system_delta: SystemDelta,
+    mut system_delta: SystemDeltaTimer,
 ) {
     let (player, mut player_ref, mut transform) = player.single_mut();
 

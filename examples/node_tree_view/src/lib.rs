@@ -34,7 +34,7 @@ fn setup_ui(mut commands: Commands, mut entities: Query<(&Name, &mut ErasedGodot
     commands.spawn().insert(ui);
 }
 
-fn update_ui(mut ui: Query<&mut Ui>, mut time: SystemDelta) {
+fn update_ui(mut ui: Query<&mut Ui>, mut time: SystemDeltaTimer) {
     let delta = time.delta_seconds_f64();
     let mut ui = ui.single_mut();
 
