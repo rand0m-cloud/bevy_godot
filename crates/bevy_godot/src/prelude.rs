@@ -26,7 +26,7 @@ pub use bevy::{
 };
 pub use godot_prelude::{
     Control, InitHandle, Node, Node2D, Object, Ref, SceneTree, Spatial, TRef,
-    Transform as GodotTransform, Transform2D as GodotTransform2D, Vector2, Vector3,
+    Transform as GodotTransform, Transform2D as GodotTransform2D, Variant, Vector2, Vector3,
 };
 
 pub use crate::bevy_godot_init;
