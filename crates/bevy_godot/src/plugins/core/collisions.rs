@@ -1,9 +1,7 @@
 use crate::prelude::{
-    bevy_prelude::{trace, CoreStage, EventReader, EventWriter, NonSendMut},
     godot_prelude::{FromVariant, ToVariant},
     *,
 };
-use bevy::ecs::event::Events;
 
 pub struct GodotCollisionsPlugin;
 

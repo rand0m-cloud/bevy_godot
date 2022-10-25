@@ -3,8 +3,7 @@ use crate::prelude::{
     *,
 };
 use bevy::ecs::system::SystemParam;
-use std::collections::HashMap;
-use std::marker::PhantomData;
+use std::{collections::HashMap, marker::PhantomData};
 
 pub struct GodotSceneTreePlugin;
 

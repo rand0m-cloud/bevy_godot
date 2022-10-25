@@ -1,7 +1,9 @@
 [gd_resource type="GDNativeLibrary" format=2]
 
 [resource]
-entry/Windows.64 = "res://../../target/debug/libspawn_scene.so"
+entry/OSX.64 = "res://../../target/debug/libspawn_scene.dylib"
+entry/Windows.64 = "res://../../target/debug/spawn_scene.dll"
 entry/X11.64 = "res://../../target/debug/libspawn_scene.so"
+dependency/OSX.64 = [  ]
 dependency/Windows.64 = [  ]
 dependency/X11.64 = [  ]

@@ -1,6 +1,6 @@
 use crate::GameState;
 use bevy_asset_loader::prelude::*;
-use bevy_godot::prelude::{godot_prelude::Control, *};
+use bevy_godot::prelude::*;
 
 #[derive(AssetCollection, Debug)]
 pub struct MenuAssets {

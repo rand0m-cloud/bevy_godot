@@ -1,4 +1,9 @@
-use crate::prelude::{godot_prelude::*, *};
+use crate::prelude::{
+    godot_prelude::{
+        GodotError, GodotObject, RefCounted, Resource, ResourceLoader, SubClass, Unique,
+    },
+    *,
+};
 use std::time::Duration;
 
 pub struct GodotAssetsPlugin;
