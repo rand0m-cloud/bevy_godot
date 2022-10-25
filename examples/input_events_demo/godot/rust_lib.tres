@@ -1,0 +1,9 @@
+[gd_resource type="GDNativeLibrary" format=2]
+
+[resource]
+entry/OSX.64 = "res://../../target/debug/libinput_events_demo.dylib"
+entry/Windows.64 = "res://../../target/debug/input_events_demo.dll"
+entry/X11.64 = "res://../../target/debug/libinput_events_demo.so"
+dependency/OSX.64 = [  ]
+dependency/Windows.64 = [  ]
+dependency/X11.64 = [  ]
