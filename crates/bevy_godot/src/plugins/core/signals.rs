@@ -1,7 +1,4 @@
-use crate::prelude::{
-    godot_prelude::{Variant, VariantArray},
-    *,
-};
+use crate::prelude::{godot_prelude::VariantArray, *};
 
 pub struct GodotSignalsPlugin;
 
