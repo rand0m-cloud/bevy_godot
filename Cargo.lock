@@ -285,7 +285,7 @@ dependencies = [
 
 [[package]]
 name = "bevy_godot"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "bevy",
@@ -392,7 +392,7 @@ version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "531f2b90c7e861a96f418b3d560131b3354c5e67a67eba3953a45a56ea0114d2"
 dependencies = [
- "glam 0.21.3",
+ "glam",
 ]
 
 [[package]]
@@ -401,7 +401,7 @@ version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "941e7d3d4e1dbb735f040e4cdc1558be1d3c38d43f1d9fdbb039c39a7849a00b"
 dependencies = [
- "glam 0.21.3",
+ "glam",
 ]
 
 [[package]]
@@ -442,7 +442,7 @@ dependencies = [
  "bevy_utils",
  "downcast-rs",
  "erased-serde",
- "glam 0.21.3",
+ "glam",
  "once_cell",
  "parking_lot",
  "serde",
@@ -871,7 +871,7 @@ checksum = "0a516181e9a36e8982cb37933c5e7dba638c42938cacde46ee4e5b4156f881b9"
 dependencies = [
  "const_panic",
  "encase_derive",
- "glam 0.21.3",
+ "glam",
  "thiserror",
 ]
 
@@ -994,9 +994,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative"
-version = "0.10.2"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98c64cca2b3dfc47127850af057ccae56d6f91f7fea1fb2ec3633c3b201a39d1"
+checksum = "fb1bd3d60d6ec0ea7a2d411760c65b91c0a3413f1d974be29587ad22c1b55c92"
 dependencies = [
  "gdnative-bindings",
  "gdnative-core",
@@ -1005,9 +1005,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative-bindings"
-version = "0.10.2"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b35590a11b7771f2f231fa7e557faeb7a82b82b8d82734dca9bf1798e9970eac"
+checksum = "b78ec23b0cc8c80d0671e3d7f83d22eb64a89d54162a2ecd25c051949b2926b1"
 dependencies = [
  "gdnative-core",
  "gdnative_bindings_generator",
@@ -1016,9 +1016,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative-core"
-version = "0.10.2"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "551bd657d084ab1e9eb642e6b60f5fe922b91091e40e5dc90f7d0c9d0c2e1371"
+checksum = "a6161074816da73747d1b5f8e378f2326eaa677b4603b04f8fb4f6b02cabdcbe"
 dependencies = [
  "ahash 0.8.0",
  "approx",
@@ -1026,7 +1026,7 @@ dependencies = [
  "bitflags",
  "gdnative-impl-proc-macros",
  "gdnative-sys",
- "glam 0.20.5",
+ "glam",
  "indexmap",
  "libc",
  "once_cell",
@@ -1035,9 +1035,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative-derive"
-version = "0.10.2"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3908fa7d0c16a6def1a3a0b286782f66b5436e86786ee0ad4471519b3caa2bed"
+checksum = "8f7bcb2d777797c900e9d119f3c5df4103eead22beacf561abd3d501c65a3c81"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1046,9 +1046,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative-impl-proc-macros"
-version = "0.10.2"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28c4f741afa39153926412322c58b225c6edfb7c5f89efbc219f3f1f8b44f78d"
+checksum = "d9da318c32936217e83702d01dfe108545785cce11833e9991c2e7b7888c90de"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1057,9 +1057,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative-sys"
-version = "0.10.2"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91ed17d56f33f289d3a5523da6e5568c5e9a184b6b08281a63be09c17c2bf5f3"
+checksum = "e572a677fcaf5e922c490e8f4a88f756a8d2a0b929fedd893793c22bcea914d1"
 dependencies = [
  "bindgen",
  "libc",
@@ -1071,9 +1071,9 @@ dependencies = [
 
 [[package]]
 name = "gdnative_bindings_generator"
-version = "0.10.2"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34935b87569d141bb13326729e8502a3023029c5849120d9f15000629ca584ff"
+checksum = "513388095128fee3360b9fae469383edcd424eaac1d6777c1dac66fcbddc4e84"
 dependencies = [
  "heck",
  "miniserde",
@@ -1097,12 +1097,6 @@ dependencies = [
  "wasi",
  "wasm-bindgen",
 ]
-
-[[package]]
-name = "glam"
-version = "0.20.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f43e957e744be03f5801a55472f593d43fabdebf25a4585db250f04d86b1675f"
 
 [[package]]
 name = "glam"
@@ -1208,7 +1202,7 @@ version = "7.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aaadafd1beb6ad34cff5521987017ece5848f9ad5401fdb039bff896a643add4"
 dependencies = [
- "glam 0.21.3",
+ "glam",
  "once_cell",
 ]
 
