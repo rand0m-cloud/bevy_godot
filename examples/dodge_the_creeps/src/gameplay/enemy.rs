@@ -6,7 +6,7 @@ use bevy_godot::prelude::{
 };
 use std::f64::consts::PI;
 
-#[derive(AssetCollection, Debug)]
+#[derive(AssetCollection, Resource, Debug)]
 pub struct EnemyAssets {
     #[asset(path = "Mob.tscn")]
     mob_scn: Handle<GodotResource>,
@@ -21,7 +21,7 @@ impl Plugin for EnemyPlugin {
                 .with_system(new_mob)
                 .with_system(kill_mob),
         )
-        .insert_resource(MobSpawnTimer(Timer::from_seconds(0.5, true)));
+        .insert_resource(MobSpawnTimer(Timer::from_seconds(0.5, TimerMode::Repeating)));
     }
 }
 
@@ -30,6 +30,7 @@ pub struct Mob {
     direction: f64,
 }
 
+#[derive(Resource)]
 pub struct MobSpawnTimer(Timer);
 
 fn spawn_mob(
@@ -61,7 +62,7 @@ fn spawn_mob(
     transform.set_rotation(direction as f32);
 
     commands
-        .spawn()
+        .spawn_empty()
         .insert(Mob { direction })
         .insert(Transform2D::from(transform))
         .insert(GodotScene::from_handle(&assets.mob_scn));

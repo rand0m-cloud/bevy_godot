@@ -7,10 +7,11 @@ impl Plugin for ScorePlugin {
         app.add_system_set(SystemSet::on_enter(GameState::Countdown).with_system(reset_score))
             .add_system(update_score_counter)
             .add_system_set(SystemSet::on_update(GameState::InGame).with_system(give_score))
-            .insert_resource(ScoreTimer(Timer::from_seconds(1.0, true)));
+            .insert_resource(ScoreTimer(Timer::from_seconds(1.0, TimerMode::Repeating)));
     }
 }
 
+#[derive(Resource)]
 pub struct ScoreTimer(Timer);
 
 fn reset_score(mut score: ResMut<Score>) {

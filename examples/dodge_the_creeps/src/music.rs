@@ -4,7 +4,7 @@ use bevy_godot::prelude::{
     godot_prelude::{AudioStream, AudioStreamPlayer},
     *,
 };
-#[derive(AssetCollection, Debug)]
+#[derive(AssetCollection, Resource, Debug)]
 pub struct MusicAssets {
     #[asset(path = "art/House In a Forest Loop.ogg.res")]
     bg_music: Handle<GodotResource>,

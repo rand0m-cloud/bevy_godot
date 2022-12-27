@@ -9,8 +9,14 @@ fn build_app(app: &mut App) {
     app.add_system(spawn_cube)
         .add_system(cube_lifetime)
         .add_system(print_entities)
-        .insert_resource(CubeSpawnTimer(Timer::from_seconds(0.2, true)))
-        .insert_resource(PrintEntitiesTimer(Timer::from_seconds(1.0, true)));
+        .insert_resource(CubeSpawnTimer(Timer::from_seconds(
+            0.2,
+            TimerMode::Repeating,
+        )))
+        .insert_resource(PrintEntitiesTimer(Timer::from_seconds(
+            1.0,
+            TimerMode::Repeating,
+        )));
 }
 
 bevy_godot_init!(init, build_app);
@@ -20,7 +26,10 @@ pub struct Cube {
     pub lifetime: Timer,
 }
 
+#[derive(Resource)]
 pub struct CubeSpawnTimer(pub Timer);
+
+#[derive(Resource)]
 pub struct PrintEntitiesTimer(pub Timer);
 
 fn spawn_cube(
@@ -37,15 +46,15 @@ fn spawn_cube(
         scene_tree.add_to_scene(csg_node.get::<Node>());
 
         commands
-            .spawn()
+            .spawn_empty()
             .insert(Cube {
-                lifetime: Timer::from_seconds(3.0, false),
+                lifetime: Timer::from_seconds(3.0, TimerMode::Once),
             })
             .insert(csg_node)
             .insert(Transform::from(BevyTransform::from_translation(Vec3::new(
-                10.0 * time.seconds_since_startup().sin() as f32,
-                5.0 * time.seconds_since_startup().sin() as f32,
-                -8.0 + -1.0 * time.seconds_since_startup() as f32,
+                10.0 * time.elapsed_seconds().sin(),
+                5.0 * time.elapsed_seconds().sin(),
+                -8.0 + -1.0 * time.elapsed_seconds(),
             ))));
     }
 }

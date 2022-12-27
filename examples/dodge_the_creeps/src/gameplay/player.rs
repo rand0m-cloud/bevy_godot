@@ -5,7 +5,7 @@ use bevy_godot::prelude::{
     *,
 };
 
-#[derive(AssetCollection, Debug)]
+#[derive(AssetCollection, Resource, Debug)]
 pub struct PlayerAssets {
     #[asset(path = "Player.tscn")]
     player_scn: Handle<GodotResource>,
@@ -36,7 +36,7 @@ pub struct Player {
 
 fn spawn_player(mut commands: Commands, assets: Res<PlayerAssets>) {
     commands
-        .spawn()
+        .spawn_empty()
         .insert(GodotScene::from_handle(&assets.player_scn))
         .insert(Player { speed: 400.0 });
 }

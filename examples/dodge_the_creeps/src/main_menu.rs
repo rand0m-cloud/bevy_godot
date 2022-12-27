@@ -2,7 +2,7 @@ use crate::GameState;
 use bevy_asset_loader::prelude::*;
 use bevy_godot::prelude::*;
 
-#[derive(AssetCollection, Debug)]
+#[derive(AssetCollection, Resource, Debug)]
 pub struct MenuAssets {
     #[asset]
     pub menu_label: Handle<ErasedGodotRef>,

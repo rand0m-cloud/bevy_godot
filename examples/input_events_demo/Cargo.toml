@@ -12,6 +12,5 @@ name = "run_input_events_demo"
 crate-type = ["cdylib"]
 
 [dependencies]
-gdnative = "0.10"
 bevy_godot = {path = "../../crates/bevy_godot"}
-bevy = {version = "0.8", default-features = false}
+bevy = {version = "0.9", default-features = false}

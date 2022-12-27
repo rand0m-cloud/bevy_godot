@@ -31,7 +31,7 @@ fn setup_ui(mut commands: Commands, mut entities: Query<(&Name, &mut ErasedGodot
         .unwrap();
     let ui = Ui::from_node(ui_canvas.get::<Node>());
 
-    commands.spawn().insert(ui);
+    commands.spawn_empty().insert(ui);
 }
 
 fn update_ui(mut ui: Query<&mut Ui>, mut time: SystemDeltaTimer) {

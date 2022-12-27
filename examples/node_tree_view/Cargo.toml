@@ -12,5 +12,5 @@ name = "node_tree_view"
 crate-type = ["cdylib"]
 
 [dependencies]
-bevy = {version = "0.8", default-features = false}
+bevy = {version = "0.9", default-features = false}
 bevy_godot = {path = "../../crates/bevy_godot"}

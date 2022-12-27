@@ -27,8 +27,8 @@ pub struct GodotCorePlugin;
 
 impl Plugin for GodotCorePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(bevy::core::CorePlugin)
-            .add_plugin(bevy::log::LogPlugin)
+        app.add_plugin(bevy::core::CorePlugin::default())
+            .add_plugin(bevy::log::LogPlugin::default())
             .add_plugin(bevy::diagnostic::DiagnosticsPlugin)
             .add_plugin(bevy::time::TimePlugin)
             .add_plugin(bevy::hierarchy::HierarchyPlugin)
@@ -41,9 +41,11 @@ impl Plugin for GodotCorePlugin {
 }
 
 /// Bevy Resource that is available when the app is updated through `_process` callback
+#[derive(Resource)]
 pub struct GodotVisualFrame;
 
 /// Bevy Resource that is available when the app is updated through `_physics_process` callback
+#[derive(Resource)]
 pub struct GodotPhysicsFrame;
 
 /// Adds `as_physics_system` that schedules a system only for the physics frame

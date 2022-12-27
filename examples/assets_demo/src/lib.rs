@@ -21,7 +21,7 @@ enum GameState {
     Playing,
 }
 
-#[derive(AssetCollection, Debug)]
+#[derive(AssetCollection, Resource, Debug)]
 struct GameAssets {
     #[asset(path = "simple_scene.tscn")]
     player: Handle<GodotResource>,
@@ -38,7 +38,7 @@ fn spawn_cube_asset(
         .unwrap();
 
     commands
-        .spawn()
+        .spawn_empty()
         .insert(spawn_location)
         .insert(GodotScene::from_handle(&game_assets.player));
 }

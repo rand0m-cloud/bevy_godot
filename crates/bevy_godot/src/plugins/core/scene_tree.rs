@@ -230,7 +230,7 @@ fn create_scene_tree_entity(
                 let mut ent = if let Some(ent) = ent {
                     commands.entity(ent)
                 } else {
-                    commands.spawn()
+                    commands.spawn_empty()
                 };
 
                 ent.insert(ErasedGodotRef::clone(&node))

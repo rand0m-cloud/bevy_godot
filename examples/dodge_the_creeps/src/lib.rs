@@ -34,5 +34,5 @@ enum GameState {
     GameOver,
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Default, Resource)]
 pub struct Score(i64);
