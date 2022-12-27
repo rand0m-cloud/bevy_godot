@@ -7,11 +7,12 @@ fn init(_handle: &InitHandle) {}
 fn build_app(app: &mut App) {
     app.add_system(print_ball_positions)
         .add_system(print_ball_collisions)
-        .insert_resource(PrintEntitiesTimer(Timer::from_seconds(0.5, true)));
+        .insert_resource(PrintEntitiesTimer(Timer::from_seconds(0.5, TimerMode::Repeating)));
 }
 
 bevy_godot_init!(init, build_app);
 
+#[derive(Resource)]
 pub struct PrintEntitiesTimer(pub Timer);
 
 fn print_ball_positions(

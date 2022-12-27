@@ -12,6 +12,7 @@ impl Plugin for GameoverPlugin {
     }
 }
 
+#[derive(Resource)]
 pub struct GameoverTimer(Timer);
 
 fn setup_gameover(
@@ -20,7 +21,7 @@ fn setup_gameover(
     menu_assets: Res<MenuAssets>,
     mut assets: ResMut<Assets<ErasedGodotRef>>,
 ) {
-    commands.insert_resource(GameoverTimer(Timer::from_seconds(2.0, false)));
+    commands.insert_resource(GameoverTimer(Timer::from_seconds(2.0, TimerMode::Once)));
 
     assets
         .get_mut(&menu_assets.menu_label)

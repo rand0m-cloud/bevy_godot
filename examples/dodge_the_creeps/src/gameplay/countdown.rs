@@ -14,6 +14,7 @@ impl Plugin for CountdownPlugin {
     }
 }
 
+#[derive(Resource)]
 pub struct CountdownTimer(Timer);
 
 fn setup_countdown(
@@ -22,7 +23,7 @@ fn setup_countdown(
     menu_assets: Res<MenuAssets>,
     mut assets: ResMut<Assets<ErasedGodotRef>>,
 ) {
-    commands.insert_resource(CountdownTimer(Timer::from_seconds(1.0, false)));
+    commands.insert_resource(CountdownTimer(Timer::from_seconds(1.0, TimerMode::Once)));
 
     assets
         .get_mut(&menu_assets.menu_label)

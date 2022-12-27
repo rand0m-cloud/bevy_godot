@@ -9,7 +9,7 @@ use std::time::Duration;
 pub struct GodotAssetsPlugin;
 impl Plugin for GodotAssetsPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(AssetServerSettings {
+        app.add_plugin(AssetPlugin {
             asset_folder: std::env::current_dir()
                 .unwrap()
                 .to_str()
@@ -17,7 +17,6 @@ impl Plugin for GodotAssetsPlugin {
                 .to_string(),
             watch_for_changes: false,
         })
-        .add_plugin(AssetPlugin)
         .add_asset::<GodotResource>()
         .add_asset::<ErasedGodotRef>()
         .init_asset_loader::<GodotResourceLoader>();
