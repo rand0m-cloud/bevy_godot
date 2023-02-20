@@ -4,7 +4,6 @@ use crate::prelude::{
     },
     *,
 };
-use std::time::Duration;
 
 pub struct GodotAssetsPlugin;
 impl Plugin for GodotAssetsPlugin {
@@ -80,7 +79,6 @@ impl AssetLoader for GodotResourceLoader {
                         Err(GodotError::FileEof) => break,
                         Err(e) => return Err(anyhow::anyhow!("failed to load godot asset: {}", e)),
                     }
-                    std::thread::sleep(Duration::from_millis(50));
                 }
                 unsafe {
                     let resource = loader.assume_safe().get_resource().unwrap();
@@ -103,6 +101,6 @@ impl AssetLoader for GodotResourceLoader {
         })
     }
     fn extensions(&self) -> &[&str] {
-        &["tscn", "scn", "res", "tres"]
+        &["tscn", "scn", "res", "tres", "jpg", "png"]
     }
 }
