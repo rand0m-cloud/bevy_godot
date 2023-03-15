@@ -40,5 +40,5 @@ fn spawn_cube_asset(
     commands
         .spawn_empty()
         .insert(spawn_location)
-        .insert(GodotScene::from_handle(&game_assets.player));
+        .insert(GodotScene::from_handle(&game_assets.player, None));
 }
