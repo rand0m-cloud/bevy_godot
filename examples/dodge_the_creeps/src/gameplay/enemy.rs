@@ -63,7 +63,7 @@ fn spawn_mob(
         .spawn_empty()
         .insert(Mob { direction })
         .insert(Transform2D::from(transform))
-        .insert(GodotScene::from_handle(&assets.mob_scn));
+        .insert(GodotScene::from_handle(&assets.mob_scn, None));
 }
 
 #[derive(NodeTreeView)]

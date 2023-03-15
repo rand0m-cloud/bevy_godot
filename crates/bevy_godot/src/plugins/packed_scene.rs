@@ -13,39 +13,56 @@ impl Plugin for PackedScenePlugin {
     }
 }
 
-#[derive(Component, Debug, Reflect, Clone)]
-#[reflect(Component)]
-pub enum GodotScene {
-    ResourcePath(String),
-    ResourceHandle(Handle<GodotResource>),
+/// A to-be-instanced-and-spawned Godot scene.
+///
+/// [`GodotScene`]s that are spawned/inserted into the bevy world will be instanced from the provided
+/// handle/path and the instance will be added as an [`ErasedGodotRef`] in the next PostUpdate stage.
+/// (see [`spawn_scene`])
+///
+/// If [`None`] parent is given, the instanced Godot scene will be added as a child of the current scene.
+#[derive(Component, Debug, Clone)]
+pub struct GodotScene {
+    resource: GodotSceneResource,
+    parent: Option<ErasedGodotRef>,
+}
+
+#[derive(Debug, Clone)]
+enum GodotSceneResource {
+    Path(String),
+    Handle(Handle<GodotResource>),
 }
 
 impl Default for GodotScene {
     fn default() -> Self {
-        Self::from_path("")
+        Self::from_path("", None)
     }
 }
 
 impl GodotScene {
-    pub fn from_path(path: &str) -> Self {
-        Self::ResourcePath(path.to_string())
+    pub fn from_path(path: &str, parent: Option<ErasedGodotRef>) -> Self {
+        Self {
+            resource: GodotSceneResource::Path(path.to_string()),
+            parent,
+        }
     }
 
-    pub fn from_handle(handle: &Handle<GodotResource>) -> Self {
-        Self::ResourceHandle(handle.clone())
+    pub fn from_handle(handle: &Handle<GodotResource>, parent: Option<ErasedGodotRef>) -> Self {
+        Self {
+            resource: GodotSceneResource::Handle(handle.clone()),
+            parent,
+        }
     }
 }
 
-#[derive(Component, Debug, Reflect, Default)]
-#[reflect(Component)]
+#[derive(Component, Debug, Default)]
 struct GodotSceneSpawned;
 
 fn spawn_scene(
     mut commands: Commands,
     mut scene_tree: SceneTreeRef,
-    new_scenes: Query<
+    mut new_scenes: Query<
         (
-            &GodotScene,
+            &mut GodotScene,
             Entity,
             Option<&Transform2D>,
             Option<&Transform>,
@@ -54,13 +71,13 @@ fn spawn_scene(
     >,
     mut assets: ResMut<Assets<GodotResource>>,
 ) {
-    for (scene, ent, transform2d, transform) in new_scenes.iter() {
+    for (mut scene, ent, transform2d, transform) in new_scenes.iter_mut() {
         let resource_loader = ResourceLoader::godot_singleton();
-        let packed_scene = match scene {
-            GodotScene::ResourcePath(path) => resource_loader
+        let packed_scene = match &scene.resource {
+            GodotSceneResource::Path(path) => resource_loader
                 .load(path, "PackedScene", false)
                 .expect("packed scene to load"),
-            GodotScene::ResourceHandle(handle) => assets
+            GodotSceneResource::Handle(handle) => assets
                 .get_mut(handle)
                 .expect("packed scene to exist in assets")
                 .0
@@ -96,9 +113,12 @@ fn spawn_scene(
             }
         }
 
-        unsafe {
-            let scene = scene_tree.get().current_scene().unwrap();
-            scene.assume_safe().add_child(instance, false);
+        match &mut scene.parent {
+            Some(parent) => parent.get::<Node>().add_child(instance, false),
+            None => unsafe {
+                let scene = scene_tree.get().current_scene().unwrap();
+                scene.assume_safe().add_child(instance, false);
+            },
         }
 
         commands
