@@ -5,12 +5,10 @@ use bevy_godot::prelude::{godot_prelude::Label, *};
 pub struct CountdownPlugin;
 impl Plugin for CountdownPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(
-            SystemSet::on_enter(GameState::Countdown)
-                .with_system(setup_countdown)
-                .with_system(kill_all_mobs),
+        app.add_systems(
+            (setup_countdown, kill_all_mobs).in_schedule(OnEnter(GameState::Countdown)),
         )
-        .add_system_set(SystemSet::on_update(GameState::Countdown).with_system(update_countdown));
+        .add_system(update_countdown.in_set(OnUpdate(GameState::Countdown)));
     }
 }
 
@@ -35,14 +33,14 @@ fn setup_countdown(
 fn update_countdown(
     mut timer: ResMut<CountdownTimer>,
     time: Res<Time>,
-    mut state: ResMut<State<GameState>>,
+    mut next_state: ResMut<NextState<GameState>>,
 
     menu_assets: Res<MenuAssets>,
     mut assets: ResMut<Assets<ErasedGodotRef>>,
 ) {
     timer.0.tick(time.delta());
     if timer.0.just_finished() {
-        state.set(GameState::InGame).unwrap();
+        next_state.set(GameState::InGame);
 
         assets
             .get_mut(&menu_assets.menu_label)

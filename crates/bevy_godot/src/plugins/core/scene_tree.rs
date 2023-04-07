@@ -9,15 +9,17 @@ pub struct GodotSceneTreePlugin;
 
 impl Plugin for GodotSceneTreePlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system_to_stage(StartupStage::PreStartup, initialize_scene_tree)
-            .add_startup_system_to_stage(StartupStage::PreStartup, connect_scene_tree)
-            .add_system_to_stage(
-                CoreStage::First,
-                write_scene_tree_events.before(Events::<SceneTreeEvent>::update_system),
+        app.add_startup_system(initialize_scene_tree.in_base_set(StartupSet::PreStartup))
+            .add_startup_system(connect_scene_tree.in_base_set(StartupSet::PreStartup))
+            .add_system(
+                write_scene_tree_events
+                    .in_base_set(CoreSet::First)
+                    .before(Events::<SceneTreeEvent>::update_system),
             )
-            .add_system_to_stage(
-                CoreStage::First,
-                read_scene_tree_events.after(Events::<SceneTreeEvent>::update_system),
+            .add_system(
+                read_scene_tree_events
+                    .in_base_set(CoreSet::First)
+                    .after(Events::<SceneTreeEvent>::update_system),
             )
             .add_event::<SceneTreeEvent>()
             .init_non_send_resource::<SceneTreeRefImpl>();

@@ -15,13 +15,11 @@ pub struct EnemyAssets {
 pub struct EnemyPlugin;
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(
-            SystemSet::on_update(GameState::InGame)
-                .with_system(spawn_mob)
-                .with_system(new_mob)
-                .with_system(kill_mob),
-        )
-        .insert_resource(MobSpawnTimer(Timer::from_seconds(0.5, TimerMode::Repeating)));
+        app.add_systems((spawn_mob, new_mob, kill_mob).in_set(OnUpdate(GameState::InGame)))
+            .insert_resource(MobSpawnTimer(Timer::from_seconds(
+                0.5,
+                TimerMode::Repeating,
+            )));
     }
 }
 

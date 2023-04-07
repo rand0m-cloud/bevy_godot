@@ -4,9 +4,10 @@ pub struct GodotSignalsPlugin;
 
 impl Plugin for GodotSignalsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_to_stage(
-            CoreStage::First,
-            write_godot_signal_events.before(Events::<GodotSignal>::update_system),
+        app.add_system(
+            write_godot_signal_events
+                .in_base_set(CoreSet::First)
+                .before(Events::<GodotSignal>::update_system),
         )
         .add_event::<GodotSignal>();
     }

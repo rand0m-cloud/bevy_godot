@@ -1,7 +1,5 @@
 use crate::prelude::*;
-use bevy::ecs::system::SystemParam;
-use iyes_loopless::condition::ConditionalSystemDescriptor;
-use iyes_loopless::prelude::*;
+use bevy::ecs::{schedule::SystemConfig, system::SystemParam};
 use std::marker::PhantomData;
 use std::time::{Duration, Instant};
 
@@ -27,8 +25,10 @@ pub struct GodotCorePlugin;
 
 impl Plugin for GodotCorePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(bevy::core::CorePlugin::default())
+        app.add_plugin(bevy::core::TaskPoolPlugin::default())
             .add_plugin(bevy::log::LogPlugin::default())
+            .add_plugin(bevy::core::TypeRegistrationPlugin)
+            .add_plugin(bevy::core::FrameCountPlugin)
             .add_plugin(bevy::diagnostic::DiagnosticsPlugin)
             .add_plugin(bevy::time::TimePlugin)
             .add_plugin(bevy::hierarchy::HierarchyPlugin)
@@ -51,24 +51,24 @@ pub struct GodotPhysicsFrame;
 /// Adds `as_physics_system` that schedules a system only for the physics frame
 pub trait AsPhysicsSystem<Params> {
     #[allow(clippy::wrong_self_convention)]
-    fn as_physics_system(self) -> ConditionalSystemDescriptor;
+    fn as_physics_system(self) -> SystemConfig;
 }
 
 impl<Params, T: IntoSystem<(), (), Params>> AsPhysicsSystem<Params> for T {
-    fn as_physics_system(self) -> ConditionalSystemDescriptor {
-        self.run_if_resource_exists::<GodotPhysicsFrame>()
+    fn as_physics_system(self) -> SystemConfig {
+        self.run_if(resource_exists::<GodotPhysicsFrame>())
     }
 }
 
 /// Adds `as_visual_system` that schedules a system only for the frame
 pub trait AsVisualSystem<Params> {
     #[allow(clippy::wrong_self_convention)]
-    fn as_visual_system(self) -> ConditionalSystemDescriptor;
+    fn as_visual_system(self) -> SystemConfig;
 }
 
 impl<Params, T: IntoSystem<(), (), Params>> AsVisualSystem<Params> for T {
-    fn as_visual_system(self) -> ConditionalSystemDescriptor {
-        self.run_if_resource_exists::<GodotVisualFrame>()
+    fn as_visual_system(self) -> SystemConfig {
+        self.run_if(resource_exists::<GodotVisualFrame>())
     }
 }
 

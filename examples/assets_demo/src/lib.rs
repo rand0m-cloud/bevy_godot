@@ -4,19 +4,19 @@ use bevy_godot::prelude::*;
 fn init(_handle: &InitHandle) {}
 
 fn build_app(app: &mut App) {
-    app.add_state(GameState::Loading)
+    app.add_state::<GameState>()
         .add_loading_state(
-            LoadingState::new(GameState::Loading)
-                .with_collection::<GameAssets>()
-                .continue_to_state(GameState::Playing),
+            LoadingState::new(GameState::Loading).continue_to_state(GameState::Playing),
         )
-        .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_cube_asset));
+        .add_collection_to_loading_state::<_, GameAssets>(GameState::Loading)
+        .add_system(spawn_cube_asset.in_schedule(OnEnter(GameState::Playing)));
 }
 
 bevy_godot_init!(init, build_app);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, States)]
 enum GameState {
+    #[default]
     Loading,
     Playing,
 }

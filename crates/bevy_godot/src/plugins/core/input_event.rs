@@ -7,9 +7,9 @@ pub struct GodotInputEventPlugin;
 
 impl Plugin for GodotInputEventPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_to_stage(
-            CoreStage::First,
+        app.add_system(
             write_input_events
+                .in_base_set(CoreSet::First)
                 .before(Events::<InputEvent>::update_system)
                 .before(Events::<UnhandledInputEvent>::update_system),
         )
