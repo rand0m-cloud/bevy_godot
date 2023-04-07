@@ -14,16 +14,19 @@ pub struct MenuAssets {
 pub struct MainMenuPlugin;
 impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(
-            SystemSet::on_exit(GameState::Loading)
-                .with_system(init_menu_assets)
-                .with_system(connect_play_button.after(init_menu_assets)),
+        app.add_systems(
+            (
+                init_menu_assets,
+                connect_play_button.after(init_menu_assets),
+            )
+                .in_schedule(OnExit(GameState::Loading)),
         )
-        .add_system_set(
-            SystemSet::on_update(GameState::MainMenu).with_system(listen_for_play_button),
-        )
-        .add_system_set(SystemSet::on_pause(GameState::MainMenu).with_system(hide_play_button))
-        .add_system_set(SystemSet::on_resume(GameState::MainMenu).with_system(show_play_button));
+        .add_system(listen_for_play_button.in_set(OnUpdate(GameState::MainMenu)));
+
+        // Not clear what "on_pause" and "on_resume" look like in bevy 0.10 - or what is triggering
+        // these states in this example in bevy 0.9
+        // .add_system_set(SystemSet::on_pause(GameState::MainMenu).with_system(hide_play_button))
+        // .add_system_set(SystemSet::on_resume(GameState::MainMenu).with_system(show_play_button));
     }
 }
 
@@ -58,15 +61,16 @@ fn connect_play_button(
 
 fn listen_for_play_button(
     mut events: EventReader<GodotSignal>,
-    mut app_state: ResMut<State<GameState>>,
+    mut app_state: ResMut<NextState<GameState>>,
 ) {
     for evt in events.iter() {
         if evt.name() == "pressed" {
-            app_state.push(GameState::Countdown).unwrap();
+            app_state.set(GameState::Countdown);
         }
     }
 }
 
+#[allow(dead_code)]
 fn hide_play_button(menu_assets: Res<MenuAssets>, mut assets: ResMut<Assets<ErasedGodotRef>>) {
     assets
         .get_mut(&menu_assets.play_button)
@@ -75,6 +79,7 @@ fn hide_play_button(menu_assets: Res<MenuAssets>, mut assets: ResMut<Assets<Eras
         .set_visible(false);
 }
 
+#[allow(dead_code)]
 fn show_play_button(menu_assets: Res<MenuAssets>, mut assets: ResMut<Assets<ErasedGodotRef>>) {
     assets
         .get_mut(&menu_assets.play_button)

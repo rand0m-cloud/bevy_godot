@@ -22,13 +22,9 @@ pub struct MusicAssets {
 pub struct MusicPlugin;
 impl Plugin for MusicPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(GameState::MainMenu).with_system(init_assets))
-            .add_system_set(SystemSet::on_enter(GameState::Countdown).with_system(play_bg_music))
-            .add_system_set(
-                SystemSet::on_enter(GameState::GameOver)
-                    .with_system(stop_bg_music)
-                    .with_system(play_death_sfx),
-            );
+        app.add_system(init_assets.in_schedule(OnEnter(GameState::MainMenu)))
+            .add_system(play_bg_music.in_schedule(OnEnter(GameState::Countdown)))
+            .add_systems((stop_bg_music, play_death_sfx).in_schedule(OnEnter(GameState::GameOver)));
     }
 }
 

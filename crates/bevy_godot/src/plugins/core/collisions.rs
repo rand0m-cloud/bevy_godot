@@ -7,10 +7,11 @@ pub struct GodotCollisionsPlugin;
 
 impl Plugin for GodotCollisionsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_to_stage(CoreStage::PreUpdate, update_godot_collisions)
-            .add_system_to_stage(
-                CoreStage::First,
-                write_godot_collision_events.before(Events::<CollisionEvent>::update_system),
+        app.add_system(update_godot_collisions.in_base_set(CoreSet::PreUpdate))
+            .add_system(
+                write_godot_collision_events
+                    .in_base_set(CoreSet::First)
+                    .before(Events::<CollisionEvent>::update_system),
             )
             .add_event::<CollisionEvent>();
     }

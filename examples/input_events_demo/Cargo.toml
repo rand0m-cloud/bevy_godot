@@ -13,4 +13,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 bevy_godot = {path = "../../crates/bevy_godot"}
-bevy = {version = "0.9", default-features = false}
+bevy = {version = "0.10", default-features = false}

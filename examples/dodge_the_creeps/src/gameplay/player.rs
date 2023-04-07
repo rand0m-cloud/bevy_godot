@@ -14,17 +14,17 @@ pub struct PlayerAssets {
 pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_exit(GameState::Loading).with_system(spawn_player))
+        app.add_system(spawn_player.in_schedule(OnExit(GameState::Loading)))
             .add_system(player_on_ready)
-            .add_system_set(
-                SystemSet::on_update(GameState::InGame)
-                    .with_system(move_player.as_physics_system())
-                    .with_system(check_player_death),
+            .add_systems(
+                (move_player.as_physics_system(), check_player_death)
+                    .in_set(OnUpdate(GameState::InGame)),
             )
-            .add_system_set(SystemSet::on_enter(GameState::Countdown).with_system(setup_player))
-            .add_system_set(
-                SystemSet::on_update(GameState::Countdown)
-                    .with_system(move_player.as_physics_system()),
+            .add_system(setup_player.in_schedule(OnEnter(GameState::Countdown)))
+            .add_system(
+                move_player
+                    .as_physics_system()
+                    .in_set(OnUpdate(GameState::Countdown)),
             );
     }
 }
@@ -118,7 +118,7 @@ fn setup_player(
 
 fn check_player_death(
     mut player: Query<(&mut ErasedGodotRef, &Collisions), With<Player>>,
-    mut state: ResMut<State<GameState>>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
     let (mut player_ref, collisions) = player.single_mut();
 
@@ -127,5 +127,5 @@ fn check_player_death(
     }
 
     player_ref.get::<Node2D>().set_visible(false);
-    state.set(GameState::GameOver).unwrap();
+    next_state.set(GameState::GameOver);
 }

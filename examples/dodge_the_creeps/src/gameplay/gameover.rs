@@ -5,10 +5,8 @@ use bevy_godot::prelude::{godot_prelude::Label, *};
 pub struct GameoverPlugin;
 impl Plugin for GameoverPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(GameState::GameOver).with_system(setup_gameover))
-            .add_system_set(
-                SystemSet::on_update(GameState::GameOver).with_system(update_gameover_timer),
-            );
+        app.add_system(setup_gameover.in_schedule(OnEnter(GameState::GameOver)))
+            .add_system(update_gameover_timer.in_set(OnUpdate(GameState::GameOver)));
     }
 }
 
@@ -33,7 +31,7 @@ fn setup_gameover(
 fn update_gameover_timer(
     mut timer: ResMut<GameoverTimer>,
     time: Res<Time>,
-    mut state: ResMut<State<GameState>>,
+    mut next_state: ResMut<NextState<GameState>>,
 
     menu_assets: Res<MenuAssets>,
     mut assets: ResMut<Assets<ErasedGodotRef>>,
@@ -43,7 +41,7 @@ fn update_gameover_timer(
         return;
     }
 
-    state.pop().unwrap();
+    next_state.set(GameState::MainMenu);
 
     assets
         .get_mut(&menu_assets.menu_label)
