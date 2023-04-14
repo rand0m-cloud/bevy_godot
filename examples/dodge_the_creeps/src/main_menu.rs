@@ -21,12 +21,9 @@ impl Plugin for MainMenuPlugin {
             )
                 .in_schedule(OnExit(GameState::Loading)),
         )
-        .add_system(listen_for_play_button.in_set(OnUpdate(GameState::MainMenu)));
-
-        // Not clear what "on_pause" and "on_resume" look like in bevy 0.10 - or what is triggering
-        // these states in this example in bevy 0.9
-        // .add_system_set(SystemSet::on_pause(GameState::MainMenu).with_system(hide_play_button))
-        // .add_system_set(SystemSet::on_resume(GameState::MainMenu).with_system(show_play_button));
+        .add_system(listen_for_play_button.in_set(OnUpdate(GameState::MainMenu)))
+        .add_system(hide_play_button.in_schedule(OnExit(GameState::MainMenu)))
+        .add_system(show_play_button.in_schedule(OnEnter(GameState::MainMenu)));
     }
 }
 
