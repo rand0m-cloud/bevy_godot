@@ -16,3 +16,10 @@ For a new Godot project, use one of the examples as a starting point. This crate
 
 ## Supported Godot Versions
 This library depends on [godot-rust](https://github.com/godot-rust/godot-rust) for the Godot API and follows their [compatibility guidelines](https://github.com/godot-rust/godot-rust#engine-compatibility).
+
+## Version Matrix
+| `bevy_godot` | `bevy` | `GodotEngine`  |
+|--------------|--------|----------------|
+| 0.3.x        | 0.8.x  | 3.5.x (x >= 1) |
+| 0.4.x        | 0.9.x  | 3.5.x (x >= 1) |
+
