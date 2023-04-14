@@ -22,4 +22,4 @@ This library depends on [godot-rust](https://github.com/godot-rust/godot-rust) f
 |--------------|--------|----------------|
 | 0.3.x        | 0.8.x  | 3.5.x (x >= 1) |
 | 0.4.x        | 0.9.x  | 3.5.x (x >= 1) |
-
+| 0.5.x        | 0.10.x | 3.5.x (x >= 1) |
