@@ -18,7 +18,7 @@ fn spawn_cube(mut commands: Commands) {
         let starting_position = Vec3::new(x, 0.0, -5.0);
         commands
             .spawn_empty()
-            .insert(GodotScene::from_path("res://simple_scene.tscn", None))
+            .insert(GodotScene::from_path("res://simple_scene.tscn"))
             .insert(Cube { starting_position })
             .insert(Transform::from(BevyTransform::from_translation(
                 starting_position,

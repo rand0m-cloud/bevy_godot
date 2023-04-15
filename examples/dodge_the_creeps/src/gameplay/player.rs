@@ -37,7 +37,7 @@ pub struct Player {
 fn spawn_player(mut commands: Commands, assets: Res<PlayerAssets>) {
     commands
         .spawn_empty()
-        .insert(GodotScene::from_handle(&assets.player_scn, None))
+        .insert(GodotScene::from_handle(&assets.player_scn))
         .insert(Player { speed: 400.0 });
 }
 
