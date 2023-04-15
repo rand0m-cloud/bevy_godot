@@ -6,13 +6,13 @@ use bevy_godot::prelude::{
 };
 #[derive(AssetCollection, Resource, Debug)]
 pub struct MusicAssets {
-    #[asset(path = "art/House In a Forest Loop.ogg.res")]
+    #[asset(path = "art/House In a Forest Loop.ogg")]
     bg_music: Handle<GodotResource>,
 
     #[asset]
     bg_music_player: Handle<ErasedGodotRef>,
 
-    #[asset(path = "art/gameover.wav.res")]
+    #[asset(path = "art/gameover.wav")]
     death_sfx: Handle<GodotResource>,
 
     #[asset]
