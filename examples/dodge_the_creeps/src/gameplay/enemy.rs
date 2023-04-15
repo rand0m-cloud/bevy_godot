@@ -45,7 +45,7 @@ fn spawn_mob(
 
     let mut mob_spawn_path_follow = entities
         .iter_mut()
-        .find_map(|(name, reference)| (name.as_str() == "MobSpawnLocation").then_some(reference))
+        .find_entity_by_name("MobSpawnLocation")
         .unwrap();
     let mob_spawn_path_follow = mob_spawn_path_follow.get::<PathFollow2D>();
 

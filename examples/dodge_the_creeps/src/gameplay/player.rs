@@ -109,7 +109,7 @@ fn setup_player(
 
     let start_position = entities
         .iter_mut()
-        .find_map(|(name, reference)| (name.as_str() == "StartPosition").then_some(reference))
+        .find_entity_by_name("StartPosition")
         .unwrap()
         .get::<Node2D>()
         .position();
