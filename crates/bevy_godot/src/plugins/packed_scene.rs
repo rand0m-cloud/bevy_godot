@@ -8,18 +8,16 @@ pub struct PackedScenePlugin;
 
 impl Plugin for PackedScenePlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(spawn_scene.in_base_set(CoreSet::PostUpdate))
-            .register_type::<GodotScene>();
+        app.add_system(spawn_scene.in_base_set(CoreSet::PostUpdate));
     }
 }
 
 /// A to-be-instanced-and-spawned Godot scene.
 ///
 /// [`GodotScene`]s that are spawned/inserted into the bevy world will be instanced from the provided
-/// handle/path and the instance will be added as an [`ErasedGodotRef`] in the next PostUpdate stage.
-/// (see [`spawn_scene`])
+/// asset handle or Godot resource path and the instance will be added as an [`ErasedGodotRef`] in the next PostUpdate stage.
 ///
-/// If [`None`] parent is given, the instanced Godot scene will be added as a child of the current scene.
+/// The instanced Godot scene will be added as a child of the current scene unless a parent is specified with [`GodotScene::with_parent`]
 #[derive(Component, Debug, Clone)]
 pub struct GodotScene {
     resource: GodotSceneResource,
@@ -34,23 +32,29 @@ enum GodotSceneResource {
 
 impl Default for GodotScene {
     fn default() -> Self {
-        Self::from_path("", None)
+        Self::from_path("")
     }
 }
 
 impl GodotScene {
-    pub fn from_path(path: &str, parent: Option<ErasedGodotRef>) -> Self {
+    pub fn from_path(path: &str) -> Self {
         Self {
             resource: GodotSceneResource::Path(path.to_string()),
-            parent,
+            parent: None,
         }
     }
 
-    pub fn from_handle(handle: &Handle<GodotResource>, parent: Option<ErasedGodotRef>) -> Self {
+    pub fn from_handle(handle: &Handle<GodotResource>) -> Self {
         Self {
             resource: GodotSceneResource::Handle(handle.clone()),
-            parent,
+            parent: None,
         }
+    }
+
+    /// Sets the parent node to spawn this scene under, defaulting to the current scene
+    pub fn with_parent(mut self, parent: ErasedGodotRef) -> Self {
+        self.parent = Some(parent);
+        self
     }
 }
 

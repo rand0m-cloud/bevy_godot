@@ -34,11 +34,11 @@ fn spawn_cube_asset(
 ) {
     let spawn_location = entities
         .iter()
-        .find_map(|(name, transform)| (name.as_str() == "SpawnPosition").then_some(*transform))
+        .find_entity_by_name("SpawnPosition")
         .unwrap();
 
     commands
         .spawn_empty()
-        .insert(spawn_location)
-        .insert(GodotScene::from_handle(&game_assets.player, None));
+        .insert(*spawn_location)
+        .insert(GodotScene::from_handle(&game_assets.player));
 }
