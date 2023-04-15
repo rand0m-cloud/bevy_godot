@@ -437,7 +437,7 @@ dependencies = [
 
 [[package]]
 name = "bevy_godot"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
  "anyhow",
  "bevy",
