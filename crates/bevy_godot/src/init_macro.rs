@@ -145,7 +145,8 @@ impl SceneTreeWatcher {
 
     #[method]
     fn scene_tree_event(&self, node: Ref<Node>, event_type: SceneTreeEventType) {
-        self.notification_channel
+        let _ = self
+            .notification_channel
             .as_ref()
             .unwrap()
             .send(SceneTreeEvent {
@@ -153,8 +154,7 @@ impl SceneTreeWatcher {
                     ErasedGodotRef::from_instance_id(node.assume_safe().get_instance_id())
                 },
                 event_type,
-            })
-            .unwrap();
+            });
     }
 }
 
@@ -178,15 +178,15 @@ impl CollisionWatcher {
         event_type: CollisionEventType,
     ) {
         let (origin, target) = unsafe { (origin.assume_safe(), target.assume_safe()) };
-        self.notification_channel
+        let _ = self
+            .notification_channel
             .as_ref()
             .unwrap()
             .send(CollisionEvent {
                 event_type,
                 origin: origin.get_instance_id(),
                 target: target.get_instance_id(),
-            })
-            .unwrap();
+            });
     }
 }
 
@@ -245,11 +245,11 @@ pub mod signal_watcher {
 
             trace!(target: "godot_signal", signal = ?signal_event);
 
-            self.notification_channel
+            let _ = self
+                .notification_channel
                 .as_ref()
                 .unwrap()
-                .send(signal_event)
-                .unwrap();
+                .send(signal_event);
         }
     }
 }
@@ -268,20 +268,20 @@ impl InputEventWatcher {
 
     #[method]
     fn _unhandled_input(&mut self, input_event: Ref<GodotInputEvent>) {
-        self.notification_channel
+        let _ = self
+            .notification_channel
             .as_ref()
             .unwrap()
-            .send((InputEventType::Unhandled, input_event))
-            .unwrap();
+            .send((InputEventType::Unhandled, input_event));
     }
 
     #[method]
     fn _input(&mut self, input_event: Ref<GodotInputEvent>) {
-        self.notification_channel
+        let _ = self
+            .notification_channel
             .as_ref()
             .unwrap()
-            .send((InputEventType::Normal, input_event))
-            .unwrap();
+            .send((InputEventType::Normal, input_event));
     }
 }
 
@@ -298,9 +298,10 @@ macro_rules! bevy_godot_init {
             bevy_godot::init_macro::godot_init(&init);
             $init(&init);
 
-            let mut init_func = bevy_godot::init_macro::BEVY_INIT_FUNC.lock().unwrap();
-            if init_func.is_none() {
-                *init_func = Some(Box::new($app));
+            if let Ok(mut init_func) = bevy_godot::init_macro::BEVY_INIT_FUNC.lock() {
+                if init_func.is_none() {
+                    *init_func = Some(Box::new($app));
+                }
             }
         }
 
