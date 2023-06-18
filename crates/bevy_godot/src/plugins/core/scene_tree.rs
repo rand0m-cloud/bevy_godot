@@ -297,11 +297,17 @@ fn create_scene_tree_entity(
                 }
             }
             SceneTreeEventType::NodeRemoved => {
-                commands.entity(ent.unwrap()).despawn_recursive();
+                if let Some(ent) = ent {
+                    commands.entity(ent).despawn_recursive()
+                };
             }
             SceneTreeEventType::NodeRenamed => {
                 commands
-                    .entity(ent.unwrap())
+                    .entity(
+                        ent.expect(
+                            "received node rename from godot but doesn't exist in bevy world",
+                        ),
+                    )
                     .insert(Name::from(node.get::<Node>().name().to_string()));
             }
         }
